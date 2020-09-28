@@ -1,8 +1,8 @@
 # JFrog Log Analytics Changelog
 All changes to the log analytics integration will be documented in this file.
 
-## [0.5.1] - Sept 9, 2020
-* Datarepo repo now submodule of parent log-analytics
+## [0.6.0] - Sept 25, 2020
+* [BREAKING] Datadog fluentd configs updated to use JF_PRODUCT_DATA_INTERNAL env.
 
 ## [0.5.0] - Sept 8, 2020
 * Adding JFrog Pipelines fluent configuration files to capture logs

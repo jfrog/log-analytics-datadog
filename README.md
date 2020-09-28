@@ -29,6 +29,41 @@ Once datadog is setup, we can access logs via Logs > Search. We can also select 
 If an apiKey exists, use the Datadog Fluentd plugin to forward logs directly from Fluentd to your datadog account. 
 Adding proper metadata is the key to unlocking the full potential of your logs in datadog. By default, the hostname and timestamp fields should be remapped
 
+
+## Environment Configuration
+
+The environment variable JF_PRODUCT_DATA_INTERNAL must be defined to the correct location.
+
+Helm based installs will already have this defined based upon the underlying docker images.
+
+For non-k8s based installations below is a reference to the Docker image locations per product. Note these locations may be different based upon the installation location chosen.
+
+````text
+Artifactory: 
+export JF_PRODUCT_DATA_INTERNAL=/var/opt/jfrog/artifactory/
+````
+
+````text
+Xray:
+export JF_PRODUCT_DATA_INTERNAL=/var/opt/jfrog/xray/
+````
+
+````text
+Mision Control:
+export JF_PRODUCT_DATA_INTERNAL=/var/opt/jfrog/mc/
+````
+
+````text
+Distribution:
+export JF_PRODUCT_DATA_INTERNAL=/var/opt/jfrog/distribution/
+````
+
+````text
+Pipelines:
+export JF_PRODUCT_DATA_INTERNAL=/opt/jfrog/pipelines/var/
+````
+
+
 ## FluentD Configuration
 
 Integration is done by specifying the apiKey
