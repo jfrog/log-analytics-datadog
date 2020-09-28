@@ -2,7 +2,7 @@
 All changes to the log analytics integration will be documented in this file.
 
 ## [0.6.0] - Sept 25, 2020
-* [BREAKING] Elastic fluentd configs updated to use JF_PRODUCT_DATA_INTERNAL env.
+* [BREAKING] Datadog fluentd configs updated to use JF_PRODUCT_DATA_INTERNAL env.
 
 ## [0.5.0] - Sept 8, 2020
 * Adding JFrog Pipelines fluent configuration files to capture logs
