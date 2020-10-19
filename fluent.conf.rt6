@@ -33,7 +33,7 @@
   tag jfrog.rt.artifactory.access
   <parse>
     @type regexp
-    expression ^(?<timestamp>[^.*]*) \[(?<action_response>[^\]]*)\] (?<repo_path>.*) for client : (?<username>.+) / (?<ip>.+)$
+    expression ^(?<timestamp>[^.*]*) \[(?<action_response>[^\]]*)\] (?<repo_path>.*) for client : (?<username>.+) / (?<ip>.+).$
     time_key timestamp
     time_format %Y-%m-%d %H:%M:%S,%L
   </parse>
