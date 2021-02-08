@@ -11,26 +11,6 @@ The following describes how to configure Datadog to gather metrics from Artifact
 | 0.2.0   | 7.7.3       | 3.8.0 | N/A          | N/A             | N/A       |
 | 0.1.1   | 7.6.3       | 3.6.2 | N/A          | N/A             | N/A       |
 
-## Requirements
-
-* Kubernetes Cluster
-* Artifactory and/or Xray installed via [JFrog Helm Charts](https://github.com/jfrog/charts)
-* Helm 3
-
-## Datadog Setup
-
-Datadog setup can be done by creating an account in datadog and going through onboarding steps or by using apiKey directly if one exists
-
-* Run the datadog agent in your kubernetes cluster by deploying it with a helm chart
-* To enable log collection, update datadog-values.yaml file given in the onboarding steps
-* Once the agent starts reporting, you'll get an apiKey which we'll be using to send formatted logs through fluentd
-
-Once datadog is setup, we can access logs via Logs > Search. We can also select the specific source that we want to get logs from
-
-If an apiKey exists, use the Datadog Fluentd plugin to forward logs directly from Fluentd to your datadog account. 
-Adding proper metadata is the key to unlocking the full potential of your logs in datadog. By default, the hostname and timestamp fields should be remapped
-
-
 ## Environment Configuration
 
 The environment variable JF_PRODUCT_DATA_INTERNAL must be defined to the correct location.
@@ -64,40 +44,229 @@ Pipelines:
 export JF_PRODUCT_DATA_INTERNAL=/opt/jfrog/pipelines/var/
 ````
 
+## Fluentd Install
 
-## FluentD Configuration
+### OS / Virtual Machine
+
+Recommended install is through fluentd's native OS based package installs:
+
+| OS            | Package Manager | Link |
+|---------------|-----------------|------|
+| CentOS/RHEL   | RPM (YUM)       | https://docs.fluentd.org/installation/install-by-rpm |
+| Debian/Ubuntu | APT             | https://docs.fluentd.org/installation/install-by-deb |
+| MacOS/Darwin  | DMG             | https://docs.fluentd.org/installation/install-by-dmg |
+| Windows       | MSI             | https://docs.fluentd.org/installation/install-by-msi |
+
+User installs can utilize the zip installer for Linux
+
+| OS            | Package Manager | Link |
+|---------------|-----------------|------|
+| Linux (x86_64)| ZIP             | https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz |
+
+Download it to a directory the user has permissions to write such as the `$JF_PRODUCT_DATA_INTERNAL` locations discussed above:
+
+````text
+cd $JF_PRODUCT_DATA_INTERNAL
+wget https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz
+````
+
+Untar to create the folder:
+````text
+tar -xvf fluentd-1.11.0-linux-x86_64.tar.gz
+````
+Move into the new folder:
+
+````text
+cd fluentd-1.11.0-linux-x86_64
+````
+Run the fluentd wrapper with one argument pointed to the configuration file to load:
+
+````text
+./fluentd test.conf
+````
+
+Next steps are to setup a  `fluentd.conf` file using the relevant integrations for Splunk, DataDog, Elastic, or Prometheus.
+
+### Docker
+
+Recommended install for Docker is to utilize the zip installer for Linux
+
+| OS            | Package Manager | Link |
+|---------------|-----------------|------|
+| Linux (x86_64)| ZIP             | https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz |
+
+Download it to a directory the user has permissions to write such as the `$JF_PRODUCT_DATA_INTERNAL` locations discussed above:
+
+````text
+cd $JF_PRODUCT_DATA_INTERNAL
+wget https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz
+````
+
+Untar to create the folder:
+````text
+tar -xvf fluentd-1.11.0-linux-x86_64.tar.gz
+````
+Move into the new folder:
+
+````text
+cd fluentd-1.11.0-linux-x86_64
+````
+Run the fluentd wrapper with one argument pointed to the configuration file to load:
+
+````text
+./fluentd test.conf
+````
+
+Next steps are to setup a  `fluentd.conf` file using the relevant configuration files for Datadog.
+
+### Kubernetes
+
+Recommended install for Kubernetes is to utilize the helm chart with the associated values.yaml in this repo.
+
+| Product | Example Values File |
+|---------|-------------|
+| Artifactory | helm/artifactory-values.yaml |
+| Artifactory HA | helm/artifactory-ha-values.yaml |
+| Xray | helm/xray-values.yaml |
+
+Update the values.yaml associated to the product you want to deploy with your Datadog settings.
+
+Then deploy the helm chart such as below:
+
+Artifactory ⎈:
+```text
+helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
+       --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
+       --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
+       -f helm/artifactory-values.yaml
+```
+
+Artifactory-HA ⎈:
+```text
+helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
+       --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
+       --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
+       -f helm/artifactory-ha-values.yaml
+```
+
+Xray ⎈:
+```text
+helm upgrade --install xray jfrog/xray --set xray.jfrogUrl=http://my-artifactory-nginx-url \
+       --set xray.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
+       --set xray.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
+       -f helm/xray-values.yaml
+```
+
+#### Kubernetes Deployment without Helm
+
+To modify existing Kubernetes based deployments without using Helm users can use the zip installer for Linux:
+
+| OS            | Package Manager | Link |
+|---------------|-----------------|------|
+| Linux (x86_64)| ZIP             | https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz |
+
+Download it to a directory the user has permissions to write such as the `$JF_PRODUCT_DATA_INTERNAL` locations discussed above:
+
+````text
+cd $JF_PRODUCT_DATA_INTERNAL
+wget https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz
+````
+
+Untar to create the folder:
+````text
+tar -xvf fluentd-1.11.0-linux-x86_64.tar.gz
+````
+Move into the new folder:
+
+````text
+cd fluentd-1.11.0-linux-x86_64
+````
+Run the fluentd wrapper with one argument pointed to the configuration file to load:
+
+````text
+./fluentd test.conf
+````
+
+Next steps are to setup a  `fluentd.conf` file using the relevant configuration files for Datadog.
+
+### Fluentd Configuration for Datadog
+
+#### Download fluentd.conf
+Artifactory: 
+````text
+wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.rt
+````
+
+Xray:
+````text
+wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.xray
+````
+
+Mision Control:
+````text
+wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.missioncontrol
+````
+
+Distribution:
+````text
+wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.distribution
+````
+
+Pipelines:
+````text
+wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.pipelines
+````
+
+#### Configure fluentd.conf
 
 Integration is done by specifying the apiKey
 
-_api_key_ is the apiKey from datadog
+_API_KEY_ is the apiKey from Datadog
+
 
 _dd_source_ attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
 _include_tag_key_ defaults to false and it will add fluentd tag in the json record if set to true
 
+These values override the last section of the `fluentd.conf` shown below:
+
 ```
 <match jfrog.**>
   @type datadog
   @id datadog_agent_artifactory
-  api_key <api_key>
+  api_key API_KEY
   include_tag_key true
   dd_source fluentd
 </match>
 ```
 
-## Datadog Demo
+Instructions to run fluentd configuration files can be found at JFrog log analytic repository's [README.](https://github.com/jfrog/log-analytics/blob/master/README.md)
 
-To run this integration start by running td-agent on artifactory and xray pods
+## Datadog Setup
 
-``` 
-td-agent
-```
+Datadog setup can be done by going through the below onboarding steps or by using apiKey directly if one exists. If an apiKey exists, use the Datadog Fluentd plugin to forward logs directly from Fluentd to your datadog account. 
 
-The apiKey is configured in td-agent which will start sending logs to datadog. 
+* Create an account in Datadog
+* Run the datadog agent in your kubernetes cluster by deploying it with a helm chart
+* To enable log collection, update datadog-values.yaml file given in the onboarding steps of datadog
+* Once the agent starts reporting, you'll get an apiKey which we'll be using to send formatted logs through fluentd
 
-Add all attributes as facets from Facets > Add on the left side of the screen in Logs > search
+Once datadog is setup, host and port should be configured in fluent.conf and td-agent can be started. We can access logs via Logs > Search. We can also select the specific source that we want to get logs from. Adding proper metadata is the key to unlocking the full potential of your logs in datadog. By default, the hostname and timestamp fields should be remapped.
 
-To access already existing visualizations and filters, click on Dashboards and add a new screenboard and then import [export.json](https://github.com/jfrog/log-analytics/blob/master/log-vendors/datadog/export.json) and overwrite the existing dashboard
+* Add all attributes as facets from Facets > Add on the left side of the screen in Logs > search
+
+### Dashboard
+Dashboard is divided into three sections Application, Audit and Requests
+
+* **Application** - This section tracks Log Volume(information about different log sources) and Artifactory Errors over time(bursts of application errors that may otherwise go undetected)
+* **Audit** - This section tracks audit logs help you determine who is accessing your Artifactory instance and from where. These can help you track potentially malicious requests or processes (such as CI jobs) using expired credentials.
+* **Requests** - This section tracks HTTP response codes, Top 10 IP addresses for uploads and downloads
+
+## Demo Requirements
+
+* Kubernetes Cluster
+* Artifactory and/or Xray installed via [JFrog Helm Charts](https://github.com/jfrog/charts)
+* Helm 3
 
 ## Generating Data for Testing
 [Partner Integration Test Framework](https://github.com/jfrog/partner-integration-tests) can be used to generate data for metrics.
