@@ -4,6 +4,8 @@ The following describes how to configure Datadog to gather metrics from Artifact
 
 | version | artifactory | xray  | distribution | mission_control | pipelines |
 |---------|-------------|-------|--------------|-----------------|-----------|
+| 0.8.0   | 7.12.8      | 3.17.3| 2.6.0        | 4.6.3           | 1.12.2    |
+| 0.7.0   | 7.10.2      | 3.11.3| 2.4.2        | 4.5.0           | 1.7.2     |
 | 0.6.0   | 7.7.8       | 3.8.6 | 2.4.2        | 4.5.0           | 1.7.2     |
 | 0.5.0   | 7.7.3       | 3.8.0 | 2.4.2        | 4.5.0           | 1.7.2     |
 | 0.4.0   | 7.7.3       | 3.8.0 | 2.4.2        | 4.5.0           | N/A       |
