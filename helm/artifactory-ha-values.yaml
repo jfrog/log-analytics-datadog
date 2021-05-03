@@ -20,14 +20,14 @@ artifactory:
         - 'sh'
         - '-c'
         - >
-          sed 's/API_KEY/{{ .Values.datadog.api_key }}/' {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
+          sed 's/API_KEY/{{ .Values.datadog.apiKey }}/' {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
           mv {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf;
       volumeMounts:
         - mountPath: "{{ .Values.artifactory.persistence.mountPath }}"
           name: volume
   customSidecarContainers: |
     - name: "artifactory-fluentd-sidecar"
-      image: "releases-docker.jfrog.io/reg2/fluentd-1.12.0"
+      image: "releases-docker.jfrog.io/reg2/fluentd:1.12.3"
       imagePullPolicy: "IfNotPresent"
       volumeMounts:
         - mountPath: "{{ .Values.artifactory.persistence.mountPath }}"
@@ -38,4 +38,4 @@ artifactory:
         - name: FLUENTD_CONF
           value: ../../../../{{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf
 datadog:
-  api_key: datadog_api_key
+  apiKey: datadog_api_key
