@@ -24,7 +24,7 @@ common:
         - '-c'
         - >
           mkdir -p {{ .Values.xray.persistence.mountPath }}/etc/fluentd/;
-          wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.xray -O {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf
+          wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/3b8ceef704569538939f6010fc3fbab215976442/fluent.conf.xray -O {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf
       volumeMounts:
         - mountPath: "{{ .Values.xray.persistence.mountPath }}"
           name: data-volume
