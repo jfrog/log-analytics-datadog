@@ -112,6 +112,28 @@
   </record>
 </filter>
 
+<source>
+  @type jfrog_siem
+  tag jfrog.xray.siem.vulnerabilities
+  jpd_url JPD_URL
+  access_token ACCESS_TOKEN
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/jfrog_siem.log.pos"
+</source>
+<filter jfrog.xray.siem.*>
+  @type record_transformer
+  enable_ruby true
+  <record>
+    repo_path ${record["impacted_artifacts_url"]}
+    log_source "jfrog.xray.siem.vulnerabilities"
+  </record>
+</filter>
+<filter jfrog.xray.siem.*>
+  @type record_modifier
+  <record>
+    _impacted_artifacts_url_ ${if record.has_key?('impacted_artifacts_url'); record.delete('impacted_artifacts_url') ; end; nil}
+  </record>
+  remove_keys _impacted_artifacts_url_
+</filter>
 ####################
 # DATADOG OUTPUT
 ####################
