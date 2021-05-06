@@ -25,7 +25,7 @@ common:
         - '-c'
         - >
           mkdir -p {{ .Values.xray.persistence.mountPath }}/etc/fluentd/;
-          wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/3b8ceef704569538939f6010fc3fbab215976442/fluent.conf.xray -O {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf
+          wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/Unified_xray_conf/fluent.conf.xray -O {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf
       volumeMounts:
         - mountPath: "{{ .Values.xray.persistence.mountPath }}"
           name: data-volume
@@ -38,10 +38,10 @@ common:
         - >
           sed 's/API_KEY/{{ .Values.datadog.apiKey }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
           mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
-          sed 's/ACCESS_TOKEN/{{ .Values.jfrog.siem.accessToken }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/siemfluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/siemfluentd.conf.new;
-          mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/siemfluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/siemfluentd.conf;
-          sed 's/JPD_URL/{{ .Values.jfrog.siem.jpdUrl }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/siemfluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/siemfluentd.conf.new;
-          mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/siemfluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/siemfluentd.conf;
+          sed 's/ACCESS_TOKEN/{{ .Values.jfrog.siem.accessToken }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
+          mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
+          sed 's/JPD_URL/{{ .Values.jfrog.siem.jpdUrl }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
+          mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
       volumeMounts:
         - mountPath: "{{ .Values.xray.persistence.mountPath }}"
           name: data-volume
