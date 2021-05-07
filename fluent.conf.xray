@@ -111,13 +111,6 @@
     log_source ${tag}
   </record>
 </filter>
-<filter jfrog.rt.artifactory.access>
-  @type record_transformer
-  enable_ruby true
-  <record>
-    impacted_artifacts ${"default/" + record["repo_path"].split(':')[0] + "/" + record["repo_path"].split(':')[1].rstrip}
-  </record>
-</filter>
 
 <source>
   @type jfrog_siem
