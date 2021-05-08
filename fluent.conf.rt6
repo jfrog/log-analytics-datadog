@@ -65,7 +65,7 @@
   @type record_transformer
   enable_ruby true
   <record>
-    impacted_artifacts ${"default/" + record["repo_path"].split(':')[0] + "/" + record["repo_path"].split(':')[1].rstrip}
+    impacted_artifacts ${if record['repo_path'].length > 1; "default/" + record["repo_path"].split(':')[0] + "/" + record["repo_path"].split(':')[1].rstrip ; end;}
   </record>
 </filter>
 <source>
