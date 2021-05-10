@@ -13,7 +13,8 @@ datadog:
   apiKey: datadog_api_key
 jfrog:
   siem:
-    accessToken: jfrog_access_token
+    username: jfrog_user
+    apikey: jfrog_api_key
 common:
   customInitContainersBegin: |
     - name: "download-fluentd-conf-on-persistent-volume"
@@ -37,7 +38,9 @@ common:
         - >
           sed 's/API_KEY/{{ .Values.datadog.apiKey }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
           mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
-          sed 's/ACCESS_TOKEN/{{ .Values.jfrog.siem.accessToken }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
+          sed 's/USER/{{ .Values.jfrog.siem.username }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
+          mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
+          sed 's/JFROG_API_KEY/{{ .Values.jfrog.siem.apiKey }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
           mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
           sed 's/JPD_URL/http:\/\/{{ .Values.xray.jfrogUrl }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
           mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
