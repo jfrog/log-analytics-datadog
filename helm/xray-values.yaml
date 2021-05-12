@@ -18,6 +18,7 @@ jfrog:
   siem:
     username: jfrog_user
     apikey: jfrog_api_key
+    jpdUrl: jfrog_jpd_url
 common:
   customInitContainersBegin: |
     - name: "download-fluentd-conf-on-persistent-volume"
@@ -45,7 +46,7 @@ common:
           mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
           sed 's/JFROG_API_KEY/{{ .Values.jfrog.siem.apikey }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
           mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
-          sed 's/JPD_URL/{{ .Values.xray.jfrogUrl }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
+          sed 's/JPD_URL/{{ .Values.jfrog.siem.jpdUrl }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
           mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
       volumeMounts:
         - mountPath: "{{ .Values.xray.persistence.mountPath }}"
