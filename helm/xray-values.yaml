@@ -39,11 +39,13 @@ common:
         - 'sh'
         - '-c'
         - >
-          sed 's/API_KEY/{{ .Values.datadog.apiKey }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
+          sed 's/DATADOG_API_KEY/{{ .Values.datadog.apiKey }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
           mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
           sed 's/USER/{{ .Values.jfrog.siem.username }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
           mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
           sed 's/JFROG_API_KEY/{{ .Values.jfrog.siem.apikey }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
+          mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
+          sed 's/JPD_URL/{{ .Values.xray.jfrogUrl }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
           mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
       volumeMounts:
         - mountPath: "{{ .Values.xray.persistence.mountPath }}"
