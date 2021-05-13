@@ -12,13 +12,6 @@ rabbitmq:
   auth:
     username: guest
     password: guest
-datadog:
-  apiKey: datadog_api_key
-jfrog:
-  siem:
-    username: jfrog_user
-    apikey: jfrog_api_key
-    jpdUrl: jfrog_jpd_url
 common:
   customInitContainersBegin: |
     - name: "download-fluentd-conf-on-persistent-volume"
@@ -63,3 +56,10 @@ common:
           value: {{ .Values.xray.persistence.mountPath }}
         - name: FLUENTD_CONF
           value: ../../../../{{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf
+datadog:
+  apiKey: datadog_api_key
+jfrog:
+  siem:
+    username: jfrog_user
+    apikey: jfrog_api_key
+    jpdUrl: jfrog_jpd_url

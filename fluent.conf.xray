@@ -139,7 +139,7 @@
 ####################
 <match jfrog.**>
   @type datadog
-  @id datadog_agent_xray
+  @id datadog_agent_jfrog_xray
   api_key DATADOG_API_KEY
   #optional
   include_tag_key true
