@@ -402,6 +402,9 @@ JFrog Artifactory Dashboard is divided into three sections Application, Audit an
 * **Audit** - This section tracks audit logs help you determine who is accessing your Artifactory instance and from where. These can help you track potentially malicious requests or processes (such as CI jobs) using expired credentials.
 * **Requests** - This section tracks HTTP response codes, Top 10 IP addresses for uploads and downloads
 
+JFrog Artifactory and Xray Metrics dashboards:
+
+JFrog Artifactory’s/Xray's Metrics API integration with Datadog allows you to send metrics from the Artifactory’s/Xray's Open Metrics API endpoint to Datadog. With this integration, you can gain insights into the system performance, storage consumption, and connection statistics associated with JFrog Artifactory/Xray, as well as, insights into the count and type of artifacts and components scanned by Xray. Upon setting up the configuration, these metrics are made available as out-of-the-box dashboards within the Datadog UI and may be used to enhance existing dashboards within Datadog.
 ## Demo Requirements
 
 * Kubernetes Cluster
