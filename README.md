@@ -1,6 +1,6 @@
 # Artifactory and Xray Logging Analytics with Fluentd and Datadog
 
-The following describes how to configure Datadog to gather metrics from Artifactory and Xray through the use of FluentD.
+The following document describes how to configure Datadog to gather metrics from Artifactory and Xray through the use of FluentD.
 
 | version | artifactory | xray  | distribution | mission_control | pipelines |
 |---------|-------------|-------|--------------|-----------------|-----------|
@@ -123,7 +123,7 @@ Next steps are to setup a  `fluentd.conf` file using the relevant configuration 
 
 ### Kubernetes
 
-Recommended install for Kubernetes is to utilize the helm chart with the associated values.yaml in this repo.
+Recommended installation for Kubernetes is to utilize the helm chart with the associated values.yaml in this repo.
 
 | Product | Example Values File |
 |---------|-------------|
@@ -131,9 +131,16 @@ Recommended install for Kubernetes is to utilize the helm chart with the associa
 | Artifactory HA | helm/artifactory-ha-values.yaml |
 | Xray | helm/xray-values.yaml |
 
+
+//TODO: HOW to modify the yaml?  
+
+
 Update the values.yaml associated to the product you want to deploy with your Datadog settings.
 
-Then deploy the helm chart such as below:
+Then deploy the helm chart as described below:
+
+Note: To generate ``masterKey`` and ``joinKey``, use the command
+``openssl rand -hex 32``
 
 Artifactory ⎈:
 ```text
@@ -144,10 +151,15 @@ helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
 ```
 
 Artifactory-HA ⎈:
+
+For HA installation, please create a license secret on your cluster prior to installation.
+
 ```text
 helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
        --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
        --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
+       --set artifactory.license.secret=<license_secret_name> \
+       --set artifactory.license.dataKey=artifactory.cluster.license \
        -f helm/artifactory-ha-values.yaml
 ```
 
@@ -167,7 +179,7 @@ To modify existing Kubernetes based deployments without using Helm users can use
 |---------------|-----------------|------|
 | Linux (x86_64)| ZIP             | https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz |
 
-Download it to a directory the user has permissions to write such as the `$JF_PRODUCT_DATA_INTERNAL` locations discussed above:
+Download it to a directory, where the user has permissions to write, such as the `$JF_PRODUCT_DATA_INTERNAL` locations discussed above:
 
 ````text
 cd $JF_PRODUCT_DATA_INTERNAL
@@ -223,12 +235,12 @@ wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent
 
 Integration is done by specifying the apiKey
 
-_API_KEY_ is the apiKey from Datadog
+```API_KEY``` is the apiKey from Datadog
 
+```include_tag_key``` defaults to false. It will add fluentd tag in the json record if set to true
 
-_dd_source_ attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
+```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
-_include_tag_key_ defaults to false and it will add fluentd tag in the json record if set to true
 
 These values override the last section of the `fluentd.conf` shown below:
 
