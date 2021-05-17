@@ -1,6 +1,6 @@
 # Artifactory and Xray Logging Analytics with Fluentd and Datadog
 
-The following describes how to configure Datadog to gather metrics from Artifactory and Xray through the use of FluentD.
+The following document describes how to configure Datadog to gather metrics from Artifactory and Xray through the use of FluentD.
 
 | version | artifactory | xray  | distribution | mission_control | pipelines |
 |---------|-------------|-------|--------------|-----------------|-----------|
@@ -191,11 +191,11 @@ Override the match directive(last section) of the downloaded `fluent.conf.distri
 </match>
 ```
 
-_**required**_: _API_KEY_ is the apiKey from Datadog
+_**required**_: ```API_KEY``` is the apiKey from Datadog
 
-_dd_source_ attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
+```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
-_include_tag_key_ defaults to false and it will add fluentd tag in the json record if set to true
+```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
 
 ### Configuration steps for Pipelines
 
@@ -218,11 +218,11 @@ Override the match directive(last section) of the downloaded `fluent.conf.pipeli
 </match>
 ```
 
-_**required**_: _API_KEY_ is the apiKey from Datadog
+_**required**_: ```API_KEY``` is the apiKey from Datadog
 
-_dd_source_ attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
+```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
-_include_tag_key_ defaults to false and it will add fluentd tag in the json record if set to true
+```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
 
 
 ## Fluentd Installation
@@ -298,7 +298,7 @@ Run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file co
 
 ### Kubernetes Deployment with Helm
 
-Recommended install for Kubernetes is to utilize the helm chart with the associated values.yaml in this repo.
+Recommended installation for Kubernetes is to utilize the helm chart with the associated values.yaml in this repo.
 
 | Product | Example Values File |
 |---------|-------------|
@@ -308,11 +308,21 @@ Recommended install for Kubernetes is to utilize the helm chart with the associa
 
 Update the values.yaml associated to the product you want to deploy with your Datadog settings.
 
-Then deploy the helm chart such as below:
+Then deploy the helm chart as described below:
+
+Add JFrog Helm repository:
+
+```text
+helm repo add jfrog https://charts.jfrog.io
+helm repo update
+```
+
+Replace placeholders with your ``masterKey`` and ``joinKey``. To generate each of them, use the command
+``openssl rand -hex 32``
 
 Artifactory ⎈:
 
-Replace the `datadog_api_key` towards the end with apiKey from Datadog and then run the following helm command
+Replace the `datadog_api_key` at the end of the yaml file with apiKey from Datadog and then run the following helm command:
 
 ```text
 helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
@@ -323,7 +333,16 @@ helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
 
 Artifactory-HA ⎈:
 
-Replace the `datadog_api_key` towards the end with apiKey from Datadog and then run the following helm command
+For HA installation, please create a license secret on your cluster prior to installation.
+
+```text
+kubectl create secret generic artifactory-license --from-file=<path_to_license_file>artifactory.cluster.license 
+```
+
+Note: Replace placeholders with your ``masterKey`` and ``joinKey``. To generate each of them, use the command
+``openssl rand -hex 32``
+
+Replace the `datadog_api_key` at the end of the yaml file with apiKey from Datadog and then run the following helm command
 
 ```text
 helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
@@ -334,15 +353,17 @@ helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
 
 Xray ⎈:
 
-Update the following fields towards the end in `/helm/xray-values.yaml`:
+Update the following fields in `/helm/xray-values.yaml`:
 
-Replace `datadog_api_key` with apiKey from Datadog
+Replace `datadog_api_key` in `datadog.apiKey` with apiKey from Datadog
 
-Replace `jfrog_user` with Artifactory username
+Replace `jfrog_user` in `jfrog.siem.username` with Artifactory username 
 
-Replace `jfrog_api_key` with [Artifactory API Key](https://www.jfrog.com/confluence/display/JFROG/User+Profile#UserProfile-APIKey)
+Replace `jfrog_api_key` in `jfrog.siem.apikey` with [Artifactory API Key](https://www.jfrog.com/confluence/display/JFROG/User+Profile#UserProfile-APIKey)
 
-Replace `jfrog_jpd_url` with Artifactory JPD URL of the format `http://<ip_address>` 
+Replace `jfrog_jpd_url` in `jfrog.siem.jpdUrl` with Artifactory JPD URL of the format `http://<ip_address>` 
+
+Use the same `joinKey` as you used in Artifactory installation to allow Xray node to successfully connect to Artifactory.
 
 ```text
 helm upgrade --install xray jfrog/xray --set xray.jfrogUrl=http://my-artifactory-nginx-url \
@@ -353,13 +374,13 @@ helm upgrade --install xray jfrog/xray --set xray.jfrogUrl=http://my-artifactory
 
 ### Kubernetes Deployment without Helm
 
-To modify existing Kubernetes based deployments without using Helm users can use the zip installer for Linux:
+To modify existing Kubernetes based deployments without using Helm, users can use the zip installer for Linux:
 
 | OS            | Package Manager | Link |
 |---------------|-----------------|------|
 | Linux (x86_64)| ZIP             | https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz |
 
-Download it to a directory the user has permissions to write such as the `$JF_PRODUCT_DATA_INTERNAL` locations discussed above  in the [Environment Configuration](#environment-configuration) section.
+Download it to a directory the user has permissions to write such as the `$JF_PRODUCT_DATA_INTERNAL` locations discussed above in the [Environment Configuration](#environment-configuration) section.
 
 ````text
 cd $JF_PRODUCT_DATA_INTERNAL
