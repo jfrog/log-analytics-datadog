@@ -2,17 +2,6 @@
 
 The following document describes how to configure Datadog to gather metrics from Artifactory and Xray through the use of FluentD.
 
-| version | artifactory | xray  | distribution | mission_control | pipelines |
-|---------|-------------|-------|--------------|-----------------|-----------|
-| 0.8.0   | 7.12.8      | 3.17.3| 2.6.0        | 4.6.3           | 1.12.2    |
-| 0.7.0   | 7.10.2      | 3.11.3| 2.4.2        | 4.5.0           | 1.7.2     |
-| 0.6.0   | 7.7.8       | 3.8.6 | 2.4.2        | 4.5.0           | 1.7.2     |
-| 0.5.0   | 7.7.3       | 3.8.0 | 2.4.2        | 4.5.0           | 1.7.2     |
-| 0.4.0   | 7.7.3       | 3.8.0 | 2.4.2        | 4.5.0           | N/A       |
-| 0.3.0   | 7.7.3       | 3.8.0 | 2.4.2        | N/A             | N/A       |
-| 0.2.0   | 7.7.3       | 3.8.0 | N/A          | N/A             | N/A       |
-| 0.1.1   | 7.6.3       | 3.6.2 | N/A          | N/A             | N/A       |
-
 ## Table of Contents
 
 1. [Environment Configuration](#environment-configuration)
