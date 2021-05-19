@@ -91,11 +91,13 @@ Override the match directive(last section) of the downloaded `fluent.conf.rt` wi
 </match>
 ```
 
-_**required**_: _API_KEY_ is the apiKey from Datadog
+_**required**_: ```API_KEY``` is the apiKey from Datadog
 
-_dd_source_ attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
+```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
-_include_tag_key_ defaults to false and it will add fluentd tag in the json record if set to true
+```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
+
+After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
 
 ### Configuration steps for Xray
 
@@ -119,13 +121,13 @@ Fill in the JPD_URL, USER, JFROG_API_KEY fields in the source directive of the d
 </source>
 ```
 
-_**required**_: _JPD_URL_ is the Artifactory JPD URL of the format `http://<ip_address>` with is used to pull Xray Violations
+_**required**_: ```JPD_URL``` is the Artifactory JPD URL of the format `http://<ip_address>` with is used to pull Xray Violations
 
-_**required**_: _USER_ is the Artifactory username for authentication
+_**required**_: ```USER``` is the Artifactory username for authentication
 
-_**required**_: _JFROG_API_KEY_ is the [Artifactory API Key](https://www.jfrog.com/confluence/display/JFROG/User+Profile#UserProfile-APIKey) for authentication
+_**required**_: ```JFROG_API_KEY``` is the [Artifactory API Key](https://www.jfrog.com/confluence/display/JFROG/User+Profile#UserProfile-APIKey) for authentication
 
-Override the match directive(last section) of the downloaded `fluent.conf.xray` with the details given below
+Override the match directive (last section) of the downloaded `fluent.conf.xray` with the details given below
 
 ```
 <match jfrog.**>
@@ -137,11 +139,13 @@ Override the match directive(last section) of the downloaded `fluent.conf.xray` 
 </match>
 ```
 
-_**required**_: _API_KEY_ is the apiKey from Datadog
+_**required**_: ```API_KEY``` is the apiKey from Datadog
 
-_dd_source_ attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
+```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
-_include_tag_key_ defaults to false and it will add fluentd tag in the json record if set to true
+```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
+
+After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
 
 ### Configuration steps for Mission Control
 
@@ -164,11 +168,13 @@ Override the match directive(last section) of the downloaded `fluent.conf.missio
 </match>
 ```
 
-_**required**_: _API_KEY_ is the apiKey from Datadog
+_**required**_: ```API_KEY``` is the apiKey from Datadog
 
-_dd_source_ attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
+```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
-_include_tag_key_ defaults to false and it will add fluentd tag in the json record if set to true
+```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
+
+After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
 
 ### Configuration steps for Distribution
 
@@ -197,6 +203,8 @@ _**required**_: ```API_KEY``` is the apiKey from Datadog
 
 ```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
 
+After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
+
 ### Configuration steps for Pipelines
 
 Download the pipelines fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
@@ -223,6 +231,8 @@ _**required**_: ```API_KEY``` is the apiKey from Datadog
 ```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
 ```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
+
+After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
 
 
 ## Fluentd Installation
@@ -263,7 +273,7 @@ cd fluentd-1.11.0-linux-x86_64
 Run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file configured above in the [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section.
 
 ````text
-./fluentd test.conf
+./fluentd $JF_PRODUCT_DATA_INTERNAL/fluent.conf.<product_name>
 ````
 
 ### Docker
@@ -293,7 +303,7 @@ cd fluentd-1.11.0-linux-x86_64
 Run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file configured above in the [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section.
 
 ````text
-./fluentd test.conf
+./fluentd $JF_PRODUCT_DATA_INTERNAL/fluent.conf.<product_name>
 ````
 
 ### Kubernetes Deployment with Helm
@@ -399,7 +409,7 @@ cd fluentd-1.11.0-linux-x86_64
 Run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file configured above in the [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section.
 
 ````text
-./fluentd test.conf
+./fluentd $JF_PRODUCT_DATA_INTERNAL/fluent.conf.<product_name>
 ````
 
 
