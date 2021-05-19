@@ -24,6 +24,8 @@ The following document describes how to configure Datadog to gather metrics from
 
 ## Environment Configuration
 
+We rely heavily on environment variables so that the correct log files are streamed to your observalibity dashboards. Ensure that you set the JF_PRODUCT_DATA_INTERNAL environment variable to the correct path for your product
+
 The environment variable JF_PRODUCT_DATA_INTERNAL must be defined to the correct location.
 
 Helm based installs will already have this defined based upon the underlying docker images.
@@ -152,7 +154,7 @@ Replace placeholders with your ``masterKey`` and ``joinKey``. To generate each o
 
 Artifactory ⎈:
 
-Replace the `datadog_api_key` at the end of the yaml file with apiKey from Datadog and then run the following helm command:
+Replace the `datadog_api_key` at the end of the yaml file with apiKey from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/) and then run the following helm command:
 
 ```text
 helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
@@ -172,7 +174,7 @@ kubectl create secret generic artifactory-license --from-file=<path_to_license_f
 Note: Replace placeholders with your ``masterKey`` and ``joinKey``. To generate each of them, use the command
 ``openssl rand -hex 32``
 
-Replace the `datadog_api_key` at the end of the yaml file with apiKey from Datadog and then run the following helm command
+Replace the `datadog_api_key` at the end of the yaml file with apiKey from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/) and then run the following helm command
 
 ```text
 helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
@@ -185,7 +187,7 @@ Xray ⎈:
 
 Update the following fields in `/helm/xray-values.yaml`:
 
-Replace `datadog_api_key` in `datadog.apiKey` with apiKey from Datadog
+Replace `datadog_api_key` in `datadog.apiKey` with apiKey from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/)
 
 Replace `jfrog_user` in `jfrog.siem.username` with Artifactory username 
 
@@ -257,7 +259,7 @@ Override the match directive(last section) of the downloaded `fluent.conf.rt` wi
 </match>
 ```
 
-_**required**_: ```API_KEY``` is the apiKey from Datadog
+_**required**_: ```API_KEY``` is the apiKey from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/)
 
 ```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
@@ -305,7 +307,7 @@ Override the match directive (last section) of the downloaded `fluent.conf.xray`
 </match>
 ```
 
-_**required**_: ```API_KEY``` is the apiKey from Datadog
+_**required**_: ```API_KEY``` is the apiKey from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/)
 
 ```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
@@ -334,7 +336,7 @@ Override the match directive(last section) of the downloaded `fluent.conf.missio
 </match>
 ```
 
-_**required**_: ```API_KEY``` is the apiKey from Datadog
+_**required**_: ```API_KEY``` is the apiKey from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/)
 
 ```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
@@ -363,7 +365,7 @@ Override the match directive(last section) of the downloaded `fluent.conf.distri
 </match>
 ```
 
-_**required**_: ```API_KEY``` is the apiKey from Datadog
+_**required**_: ```API_KEY``` is the apiKey from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/)
 
 ```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
@@ -392,7 +394,7 @@ Override the match directive(last section) of the downloaded `fluent.conf.pipeli
 </match>
 ```
 
-_**required**_: ```API_KEY``` is the apiKey from Datadog
+_**required**_: ```API_KEY``` is the apiKey from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/)
 
 ```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
