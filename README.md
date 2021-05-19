@@ -55,175 +55,6 @@ Pipelines:
 export JF_PRODUCT_DATA_INTERNAL=/opt/jfrog/pipelines/var/
 ````
 
-## Fluentd Configuration for Datadog
-
-Download and configure the relevant fluentd.conf files for Datadog
-
-### Configuration steps for Artifactory
-
-Download the artifactory fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
-
-````text
-cd $JF_PRODUCT_DATA_INTERNAL
-wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.rt
-````
-
-Override the match directive(last section) of the downloaded `fluent.conf.rt` with the details given below
-
-```
-<match jfrog.**>
-  @type datadog
-  @id datadog_agent_jfrog_artifactory
-  api_key API_KEY
-  include_tag_key true
-  dd_source fluentd
-</match>
-```
-
-_**required**_: ```API_KEY``` is the apiKey from Datadog
-
-```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
-
-```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
-
-After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
-
-### Configuration steps for Xray
-
-Download the Xray fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
-
-````text
-cd $JF_PRODUCT_DATA_INTERNAL
-wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.xray
-````
-
-Fill in the JPD_URL, USER, JFROG_API_KEY fields in the source directive of the downloaded `fluent.conf.xray` with the details given below
-
-```text
-<source>
-  @type jfrog_siem
-  tag jfrog.xray.siem.vulnerabilities
-  jpd_url JPD_URL
-  username USER
-  apikey JFROG_API_KEY
-  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/jfrog_siem.log.pos"
-</source>
-```
-
-_**required**_: ```JPD_URL``` is the Artifactory JPD URL of the format `http://<ip_address>` with is used to pull Xray Violations
-
-_**required**_: ```USER``` is the Artifactory username for authentication
-
-_**required**_: ```JFROG_API_KEY``` is the [Artifactory API Key](https://www.jfrog.com/confluence/display/JFROG/User+Profile#UserProfile-APIKey) for authentication
-
-Override the match directive (last section) of the downloaded `fluent.conf.xray` with the details given below
-
-```
-<match jfrog.**>
-  @type datadog
-  @id datadog_agent_jfrog_xray
-  api_key API_KEY
-  include_tag_key true
-  dd_source fluentd
-</match>
-```
-
-_**required**_: ```API_KEY``` is the apiKey from Datadog
-
-```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
-
-```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
-
-After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
-
-### Configuration steps for Mission Control
-
-Download the Mission Control fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
-
-````text
-cd $JF_PRODUCT_DATA_INTERNAL
-wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.missioncontrol
-````
-
-Override the match directive(last section) of the downloaded `fluent.conf.missioncontrol` with the details given below
-
-```
-<match jfrog.**>
-  @type datadog
-  @id datadog_agent_jfrog_missioncontrol
-  api_key API_KEY
-  include_tag_key true
-  dd_source fluentd
-</match>
-```
-
-_**required**_: ```API_KEY``` is the apiKey from Datadog
-
-```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
-
-```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
-
-After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
-
-### Configuration steps for Distribution
-
-Download the distribution fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
-
-````text
-cd $JF_PRODUCT_DATA_INTERNAL
-wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.distribution
-````
-
-Override the match directive(last section) of the downloaded `fluent.conf.distribution` with the details given below
-
-```
-<match jfrog.**>
-  @type datadog
-  @id datadog_agent_jfrog_distribution
-  api_key API_KEY
-  include_tag_key true
-  dd_source fluentd
-</match>
-```
-
-_**required**_: ```API_KEY``` is the apiKey from Datadog
-
-```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
-
-```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
-
-After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
-
-### Configuration steps for Pipelines
-
-Download the pipelines fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
-
-````text
-cd $JF_PRODUCT_DATA_INTERNAL
-wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.pipelines
-````
-
-Override the match directive(last section) of the downloaded `fluent.conf.pipelines` with the details given below
-
-```
-<match jfrog.**>
-  @type datadog
-  @id datadog_agent_jfrog_pipelines
-  api_key API_KEY
-  include_tag_key true
-  dd_source fluentd
-</match>
-```
-
-_**required**_: ```API_KEY``` is the apiKey from Datadog
-
-```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
-
-```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
-
-After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
-
-
 ## Fluentd Installation
 
 ### OS / Virtual Machine
@@ -400,6 +231,174 @@ Run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file co
 ````text
 ./fluentd $JF_PRODUCT_DATA_INTERNAL/fluent.conf.<product_name>
 ````
+
+## Fluentd Configuration for Datadog
+
+Download and configure the relevant fluentd.conf files for Datadog
+
+### Configuration steps for Artifactory
+
+Download the artifactory fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
+
+````text
+cd $JF_PRODUCT_DATA_INTERNAL
+wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.rt
+````
+
+Override the match directive(last section) of the downloaded `fluent.conf.rt` with the details given below
+
+```
+<match jfrog.**>
+  @type datadog
+  @id datadog_agent_jfrog_artifactory
+  api_key API_KEY
+  include_tag_key true
+  dd_source fluentd
+</match>
+```
+
+_**required**_: ```API_KEY``` is the apiKey from Datadog
+
+```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
+
+```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
+
+After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
+
+### Configuration steps for Xray
+
+Download the Xray fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
+
+````text
+cd $JF_PRODUCT_DATA_INTERNAL
+wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.xray
+````
+
+Fill in the JPD_URL, USER, JFROG_API_KEY fields in the source directive of the downloaded `fluent.conf.xray` with the details given below
+
+```text
+<source>
+  @type jfrog_siem
+  tag jfrog.xray.siem.vulnerabilities
+  jpd_url JPD_URL
+  username USER
+  apikey JFROG_API_KEY
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/jfrog_siem.log.pos"
+</source>
+```
+
+_**required**_: ```JPD_URL``` is the Artifactory JPD URL of the format `http://<ip_address>` with is used to pull Xray Violations
+
+_**required**_: ```USER``` is the Artifactory username for authentication
+
+_**required**_: ```JFROG_API_KEY``` is the [Artifactory API Key](https://www.jfrog.com/confluence/display/JFROG/User+Profile#UserProfile-APIKey) for authentication
+
+Override the match directive (last section) of the downloaded `fluent.conf.xray` with the details given below
+
+```
+<match jfrog.**>
+  @type datadog
+  @id datadog_agent_jfrog_xray
+  api_key API_KEY
+  include_tag_key true
+  dd_source fluentd
+</match>
+```
+
+_**required**_: ```API_KEY``` is the apiKey from Datadog
+
+```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
+
+```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
+
+After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
+
+### Configuration steps for Mission Control
+
+Download the Mission Control fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
+
+````text
+cd $JF_PRODUCT_DATA_INTERNAL
+wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.missioncontrol
+````
+
+Override the match directive(last section) of the downloaded `fluent.conf.missioncontrol` with the details given below
+
+```
+<match jfrog.**>
+  @type datadog
+  @id datadog_agent_jfrog_missioncontrol
+  api_key API_KEY
+  include_tag_key true
+  dd_source fluentd
+</match>
+```
+
+_**required**_: ```API_KEY``` is the apiKey from Datadog
+
+```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
+
+```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
+
+After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
+
+### Configuration steps for Distribution
+
+Download the distribution fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
+
+````text
+cd $JF_PRODUCT_DATA_INTERNAL
+wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.distribution
+````
+
+Override the match directive(last section) of the downloaded `fluent.conf.distribution` with the details given below
+
+```
+<match jfrog.**>
+  @type datadog
+  @id datadog_agent_jfrog_distribution
+  api_key API_KEY
+  include_tag_key true
+  dd_source fluentd
+</match>
+```
+
+_**required**_: ```API_KEY``` is the apiKey from Datadog
+
+```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
+
+```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
+
+After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
+
+### Configuration steps for Pipelines
+
+Download the pipelines fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
+
+````text
+cd $JF_PRODUCT_DATA_INTERNAL
+wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.pipelines
+````
+
+Override the match directive(last section) of the downloaded `fluent.conf.pipelines` with the details given below
+
+```
+<match jfrog.**>
+  @type datadog
+  @id datadog_agent_jfrog_pipelines
+  api_key API_KEY
+  include_tag_key true
+  dd_source fluentd
+</match>
+```
+
+_**required**_: ```API_KEY``` is the apiKey from Datadog
+
+```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
+
+```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
+
+After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
 
 
 ## Datadog Setup
