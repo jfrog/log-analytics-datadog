@@ -61,7 +61,7 @@ export JF_PRODUCT_DATA_INTERNAL=/opt/jfrog/pipelines/var/
 
 ### OS / Virtual Machine
 
-Recommended install is through fluentd's native OS based package installs:
+Ensure you have access to the Internet from VM. Recommended install is through fluentd's native OS based package installs:
 
 | OS            | Package Manager | Link |
 |---------------|-----------------|------|
