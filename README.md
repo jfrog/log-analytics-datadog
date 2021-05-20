@@ -267,7 +267,6 @@ _**required**_: ```API_KEY``` is the apiKey from [Datadog](https://docs.datadogh
 
 ```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
 
-After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
 
 ### Configuration steps for Xray
 
@@ -315,7 +314,6 @@ _**required**_: ```API_KEY``` is the apiKey from [Datadog](https://docs.datadogh
 
 ```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
 
-After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
 
 ### Configuration steps for Mission Control
 
@@ -344,8 +342,6 @@ _**required**_: ```API_KEY``` is the apiKey from [Datadog](https://docs.datadogh
 
 ```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
 
-After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
-
 ### Configuration steps for Distribution
 
 Download the distribution fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
@@ -373,8 +369,6 @@ _**required**_: ```API_KEY``` is the apiKey from [Datadog](https://docs.datadogh
 
 ```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
 
-After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
-
 ### Configuration steps for Pipelines
 
 Download the pipelines fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
@@ -401,8 +395,6 @@ _**required**_: ```API_KEY``` is the apiKey from [Datadog](https://docs.datadogh
 ```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
 
 ```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
-
-After saving the configuration file, please proceed to the installation part - [Fluentd Installation](#fluentd-installation)
 
 
 ## Datadog Setup
