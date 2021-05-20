@@ -92,7 +92,8 @@ Move into the new folder:
 ````text
 cd fluentd-1.11.0-linux-x86_64
 ````
-Run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file configured above in the [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section.
+
+Configure `fluent.conf.*` according to the instructions mentioned in [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section and then run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file configured.
 
 ````text
 ./fluentd $JF_PRODUCT_DATA_INTERNAL/fluent.conf.<product_name>
@@ -122,7 +123,8 @@ Move into the new folder:
 ````text
 cd fluentd-1.11.0-linux-x86_64
 ````
-Run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file configured above in the [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section.
+
+Configure `fluent.conf.*` according to the instructions mentioned in [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section and then run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file configured.
 
 ````text
 ./fluentd $JF_PRODUCT_DATA_INTERNAL/fluent.conf.<product_name>
@@ -228,7 +230,7 @@ Move into the new folder:
 ````text
 cd fluentd-1.11.0-linux-x86_64
 ````
-Run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file configured above in the [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section.
+Configure `fluent.conf.*` according to the instructions mentioned in [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section and then run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file configured.
 
 ````text
 ./fluentd $JF_PRODUCT_DATA_INTERNAL/fluent.conf.<product_name>
