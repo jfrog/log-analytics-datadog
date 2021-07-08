@@ -1,0 +1,53 @@
+<source>
+    @type tail
+    path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/logs/access.log"
+    pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/logs/access.log.pos"
+    tag jfrog.nginx.access
+    <parse>
+        @type none
+    </parse>
+</source>
+<source>
+    @type tail
+    path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/logs/error.log"
+    pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/logs/error.log.pos"
+    tag jfrog.nginx.error
+    <parse>
+        @type none
+    </parse>
+</source>
+
+<filter jfrog.nginx.error>
+  @type parser
+  key_name message
+  <parse>
+      @type regexp
+      expression /^(?<timestamp>[^ ]* [^ ]*) \[(?<log_level>[^\]]*)\] (?<error_message>.*)$/
+      time_format %Y-%m-%dT%H:%M:%S.%LZ
+  </parse>
+</filter>
+<filter jfrog.nginx.access>
+  @type parser
+  key_name message
+  <parse>
+      @type regexp
+      expression /^ip = (?<ip>[^ ]*) user = "(?<user>[^ ]*)" local_time = "(?<local_time>(.*?))" host = (?<host>[^ ]*) request = "(?<request>(.*?))" status = (?<status>[^ ]*) bytes = (?<bytes>[^ ]*) upstream = "(?<upstream>(.*?))" upstream_time = (?<upstream_time>[^ ]*) request_time = (?<request_time>[^ ]*) referer = "(?<referer>(.*?))" UA = "(?<UA>(.*?))"/
+      time_format %d/%b/%Y:%H:%M:%S %z
+  </parse>
+</filter>
+<filter jfrog.**>
+  @type record_transformer
+  <record>
+    hostname "#{Socket.gethostname}"
+    log_source ${tag}
+  </record>
+</filter>
+
+<match jfrog.**>
+  @type datadog
+  @id datadog_agent_jfrog_nginx
+  api_key <datadog_api_key>
+  #optional
+  include_tag_key true
+  dd_source fluentd
+</match>
