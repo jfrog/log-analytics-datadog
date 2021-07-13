@@ -43,7 +43,12 @@ export JF_PRODUCT_DATA_INTERNAL=/var/opt/jfrog/xray/
 ````
 
 ````text
-Mision Control:
+Nginx:
+export JF_PRODUCT_DATA_INTERNAL=/var/opt/jfrog/nginx/
+````
+
+````text
+Mission Control:
 export JF_PRODUCT_DATA_INTERNAL=/var/opt/jfrog/mc/
 ````
 
@@ -302,6 +307,34 @@ Override the match directive (last section) of the downloaded `fluent.conf.xray`
 <match jfrog.**>
   @type datadog
   @id datadog_agent_jfrog_xray
+  api_key API_KEY
+  include_tag_key true
+  dd_source fluentd
+</match>
+```
+
+_**required**_: ```API_KEY``` is the apiKey from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/)
+
+```dd_source``` attribute is set to the name of the log integration in your logs in order to trigger the integration automatic setup in datadog.
+
+```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
+
+
+### Configuration steps for Nginx
+
+Download the Mission Control fluentd configuration file to a directory the user has permissions to write, such as the $JF_PRODUCT_DATA_INTERNAL locations discussed above in the [Environment Configuration](#environment-configuration) section.
+
+````text
+cd $JF_PRODUCT_DATA_INTERNAL
+wget https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.nginx
+````
+
+Override the match directive(last section) of the downloaded `fluent.conf.nginx` with the details given below
+
+```
+<match jfrog.**>
+  @type datadog
+  @id datadog_agent_jfrog_nginx
   api_key API_KEY
   include_tag_key true
   dd_source fluentd
