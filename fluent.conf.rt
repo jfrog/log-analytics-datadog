@@ -254,7 +254,7 @@
 <source>
   @type exec
   tag jfrog.callhome.heap
-  command echo '"test-key":"test response"'
+  command echo "{}"
   run_interval 5s
   <parse>
     @type json
@@ -265,23 +265,24 @@
   renew_record true
   enable_ruby true
   <record>
-    app_id <APP_ID>
-    event "log-analytics-installation-datadog"
+    app_id "1303266293"
+    event "log-analytics-installation-datadog-code"
     identity "U01QV918MH"
   </record>
 </filter>
 <match jfrog.callhome.heap>
 #   @type stdout
   @type http
+#   endpoint http://localhost:8080
   endpoint https://heapanalytics.com/api/track
   open_timeout 5
-  content_type application/x-ndjson
+  content_type application/json
+#   headers {"Content-Length": 2}
   <format>
     @type json
   </format>
-  json_array false
   <buffer>
-    flush_interval 5s
+    flush_interval 2s
   </buffer>
 </match>
 
