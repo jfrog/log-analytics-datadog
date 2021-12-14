@@ -164,7 +164,7 @@ Artifactory ⎈:
 Replace the `datadog_api_key` at the end of the yaml file with apiKey from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/) and then run the following helm command:
 
 ```text
-helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
+helm upgrade --install artifactory  jfrog/artifactory \
        --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
        --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
        -f helm/artifactory-values.yaml
