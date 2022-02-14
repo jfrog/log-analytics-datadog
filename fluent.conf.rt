@@ -186,22 +186,31 @@
     log_source ${tag}
   </record>
 </filter>
+# <source>
+#   @type exec
+#   tag jfrog.callhome
+#   command "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/fluentd-1.11.0-linux-x86_64/lib/ruby/bin/gem list --local | grep fluent | sed 's/ (/:/g' | sed 's/)//g'  | sed ':a;N;$!ba;s/\n/\t/g'"
+#   run_interval 1d
+#   <parse>
+#     @type ltsv
+#   </parse>
+# </source>
+# <source>
+#   @type exec
+#   tag jfrog.callhome
+#   command /opt/td-agent/embedded/bin/gem list --local | grep fluent | sed 's/ (/:/g' | sed 's/)//g'  | sed ':a;N;$!ba;s/\n/\t/g'
+#   run_interval 1d
+#   <parse>
+#     @type ltsv
+#   </parse>
+# </source>
 <source>
   @type exec
   tag jfrog.callhome
-  command "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/fluentd-1.11.0-linux-x86_64/lib/ruby/bin/gem list --local | grep fluent | sed 's/ (/:/g' | sed 's/)//g'  | sed ':a;N;$!ba;s/\n/\t/g'"
+  command "pwd"
   run_interval 1d
   <parse>
-    @type ltsv
-  </parse>
-</source>
-<source>
-  @type exec
-  tag jfrog.callhome
-  command /opt/td-agent/embedded/bin/gem list --local | grep fluent | sed 's/ (/:/g' | sed 's/)//g'  | sed ':a;N;$!ba;s/\n/\t/g'
-  run_interval 1d
-  <parse>
-    @type ltsv
+    @type none
   </parse>
 </source>
 <filter jfrog.callhome>
@@ -210,7 +219,7 @@
   keep_keys 'productId,features'
   enable_ruby true
   <record>
-    productId 'jfrogLogAnalytics/v0.1.0'
+    productId 'jfrogLogAnalyticsDatadog/0.8.0'
     features ${return(record.map { |k,v| { "featureId" => (k + ':' + v).to_sym} })}
   </record>
 </filter>
@@ -219,6 +228,11 @@
   endpoint http://localhost:8081/artifactory/api/system/usage
   open_timeout 5
   content_type application/json
+  <auth>
+    method basic
+    username "#{ENV['JF_USER']}"
+    password "#{ENV['JF_PASS']}"
+  </auth>
   <format>
     @type json
   </format>

@@ -35,6 +35,9 @@ For non-k8s based installations below is a reference to the Docker image locatio
 ````text
 Artifactory: 
 export JF_PRODUCT_DATA_INTERNAL=/var/opt/jfrog/artifactory/
+To authenticate with the API:
+export JF_USER=<Your Artifactory Username>
+export JF_PASS=<Your Artifactory Password>
 ````
 
 ````text
