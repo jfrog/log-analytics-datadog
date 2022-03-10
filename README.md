@@ -272,6 +272,15 @@ _**required**_: ```API_KEY``` is the apiKey from [Datadog](https://docs.datadogh
 
 ```include_tag_key``` defaults to false and it will add fluentd tag in the json record if set to true
 
+Authenticate with the Artifactory API by replacing `<TOKEN>` with your bearer token in the downloaded `fluent.conf.rt` file.
+There should be two spots listed below:
+
+```
+command "curl --request GET 'http://localhost:8081/artifactory/api/system/version' -H 'Authorization: Bearer <TOKEN>'"
+headers {"Authorization":"Bearer <TOKEN>"}
+```
+
+For information on authentication with a bearer token with artifactory, please visit [Bearer Token Authentication](https://www.jfrog.com/confluence/display/JFROG/Access+Tokens#AccessTokens)
 
 ### Configuration steps for Xray
 
