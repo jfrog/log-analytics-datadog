@@ -205,7 +205,9 @@ Second, when your JFrog Platform is ready and accessible, the following should b
 1. Access Token - click [here](https://www.jfrog.com/confluence/display/JFROG/Access+Tokens#AccessTokens-GeneratingScopedTokens) to know how to generate a admin scoped access token
 2. API Key - click [here](https://www.jfrog.com/confluence/display/RTF6X/Updating+Your+Profile#UpdatingYourProfile-APIKey) to generate an API Key with profile update process
 3. User - admin
-   Refer [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section for configuring the below parameters
+   
+Refer [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section for configuring the below parameters
+
 4. Datadog API Key - click [here](https://docs.datadoghq.com/account_management/api-app-keys/), to get the API Key which should be used to send data to Datadog
 
 Once the values are noted, download the file to apply the JFrog Platform Upgrade for Datadog from [here](https://github.com/jfrog/log-analytics-datadog/blob/master/helm/jfrog-platform-values.yaml)
