@@ -20,7 +20,7 @@ artifactory:
         - 'sh'
         - '-c'
         - >
-          sed 's/API_KEY/{{ .Values.datadog.apiKey }}/' {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
+          sed 's/DATADOG_API_KEY/{{ .Values.datadog.apiKey }}/' {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
           mv {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf;
       volumeMounts:
         - mountPath: "{{ .Values.artifactory.persistence.mountPath }}"

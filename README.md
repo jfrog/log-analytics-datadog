@@ -9,6 +9,7 @@ The following document describes how to configure Datadog to gather metrics from
 1. [Environment Configuration](#environment-configuration)
 2. [Fluentd Installation](#fluentd-installation)
     * [OS / Virtual Machine](#os--virtual-machine)
+    * [Docker](#docker)
     * [Kubernetes Deployment with Helm](#kubernetes-deployment-with-helm)
 3. [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog)
     * [Configuration steps for Artifactory](#configuration-steps-for-artifactory)
@@ -110,6 +111,45 @@ Configure `fluent.conf.*` according to the instructions mentioned in [Fluentd Co
 ````text
 ./fluentd $JF_PRODUCT_DATA_INTERNAL/fluent.conf.<product_name>
 ````
+
+### Docker
+
+In order to run fluentd as a docker image to send the log, siem and metrics data to datadog, the following commands needs to be executed on the host that runs the docker.
+
+1. Check the docker installation is functional, execute command 'docker version' and 'docker ps'.
+
+2. Once the version and process are listed successfully, build the intended docker image for the observability platform using the docker file,
+
+	* Download Dockerfile from [here](https://raw.githubusercontent.com/jfrog/log-analytics/master/docker-build/Dockerfile) to any directory which has write permissions.
+
+3. Download the Dockerenvfile_<observability_platform>.txt file needed to run Jfrog/FluentD Docker Images for the intended observability platform,
+
+	* Download Dockerenvfile_datadog.txt from [here](https://raw.githubusercontent.com/jfrog/log-analytics/master/docker-build/Dockerenvfile_datadog.txt) to the directory where the docker file was downloaded.
+
+```text
+
+For Datadog as the observability platform, execute these commands to setup the docker container running the fluentd installation
+
+1. Execute 'docker build --build-arg SOURCE="JFRT" --build-arg TARGET="DATADOG" -t <image_name> .'
+
+Command example
+
+'docker build --build-arg SOURCE="JFRT" --build-arg TARGET="DATADOG" -t jfrog/fluentd-datadog-rt .'
+
+The above command will build the docker image.
+
+2. Fill the necessary information in the Dockerenvfile_datadogk.txt file, if the value for any of the field requires to have a '/' use '\/' and if '\' is required use '\\'.
+
+3. Execute 'docker run -it --name jfrog-fluentd-datadogk-rt -v <path_to_logs>:/var/opt/jfrog/artifactory --env-file Dockerenvfile_datadog.txt <image_name>' 
+
+The <path_to_logs> should be an absolute path where the Jfrog Artifactory Logs folder resides, i.e for an Docker based Artifactory Installation,  ex: /var/opt/jfrog/artifactory/var/logs on the docker host.
+
+Command example
+
+'docker run -it --name jfrog-fluentd-datadog-rt -v /var/opt/jfrog/artifactory/var:/var/opt/jfrog/artifactory --env-file Dockerenvfile_datadog.txt jfrog/fluentd-datadog-rt'
+
+
+```
 
 ### Kubernetes Deployment with Helm
 

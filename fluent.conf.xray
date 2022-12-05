@@ -116,8 +116,8 @@
   @type jfrog_siem
   tag jfrog.xray.siem.vulnerabilities
   jpd_url JPD_URL
-  username USER
-  apikey JFROG_API_KEY
+  username JPD_USER_NAME
+  apikey JPD_API_KEY
   pos_file_path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/jfrog_siem.log.pos"
 </source>
 <filter jfrog.xray.siem.*>
