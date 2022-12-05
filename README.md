@@ -4,12 +4,13 @@ The following document describes how to configure Datadog to gather metrics from
 
 ## Table of Contents
 
+`Note! You must follow the order of the steps throughout Datadog Configuration`
+
 1. [Environment Configuration](#environment-configuration)
 2. [Fluentd Installation](#fluentd-installation)
     * [OS / Virtual Machine](#os--virtual-machine)
     * [Docker](#docker)
     * [Kubernetes Deployment with Helm](#kubernetes-deployment-with-helm)
-    * [Kubernetes Deployment without Helm](#kubernetes-deployment-without-helm)
 3. [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog)
     * [Configuration steps for Artifactory](#configuration-steps-for-artifactory)
     * [Configuration steps for Xray](#configuration-steps-for-xray)
@@ -74,60 +75,36 @@ Ensure you have access to the Internet from VM. Recommended install is through f
 | Debian/Ubuntu | APT             | https://docs.fluentd.org/installation/install-by-deb |
 | MacOS/Darwin  | DMG             | https://docs.fluentd.org/installation/install-by-dmg |
 | Windows       | MSI             | https://docs.fluentd.org/installation/install-by-msi |
+| Gem Install**	 | MacOS & Linux - Gem			 | https://docs.fluentd.org/installation/install-by-gem | 
 
-User installs can utilize the zip installer for Linux
+```text
+** For Gem based install, Ruby Interpreter has to be setup first, following is the recommended process to install Ruby
 
-| OS            | Package Manager | Link |
-|---------------|-----------------|------|
-| Linux (x86_64)| ZIP             | https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz |
+1. Install Ruby Version Manager (RVM) as described in https://rvm.io/rvm/install#installation-explained, ensure to follow all the onscreen instructions provided to complete the rvm installation
+	* For installation across users a SUDO based install is recommended, the installation is as described in https://rvm.io/support/troubleshooting#sudo
 
-Download it to a directory the user has permissions to write such as the `$JF_PRODUCT_DATA_INTERNAL` locations discussed above in the [Environment Configuration](#environment-configuration) section.
+2. Once rvm installation is complete, verify the RVM installation executing the command 'rvm -v'
 
-````text
-cd $JF_PRODUCT_DATA_INTERNAL
-wget https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz
-````
+3. Now install ruby v2.7.0 or above executing the command 'rvm install <ver_num>', ex: 'rvm install 2.7.5'
 
-Untar to create the folder:
-````text
-tar -xvf fluentd-1.11.0-linux-x86_64.tar.gz
-````
-Move into the new folder:
+4. Verify the ruby installation, execute 'ruby -v', gem installation 'gem -v' and 'bundler -v' to ensure all the components are intact
 
-````text
-cd fluentd-1.11.0-linux-x86_64
-````
+5. Post completion of Ruby, Gems installation, the environment is ready to further install new gems, execute the following gem install commands one after other to setup the needed ecosystem
 
-Configure `fluent.conf.*` according to the instructions mentioned in [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section and then run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file configured.
+	'gem install fluentd'
 
-````text
-./fluentd $JF_PRODUCT_DATA_INTERNAL/fluent.conf.<product_name>
-````
+```
 
-### Docker
+After FluentD is successfully installed, the below plugins are required to be installed
 
-Recommended install for Docker is to utilize the zip installer for Linux
+```text
 
-| OS            | Package Manager | Link |
-|---------------|-----------------|------|
-| Linux (x86_64)| ZIP             | https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz |
+	'gem install fluent-plugin-datadog'
+	'gem install fluent-plugin-jfrog-siem'
+	'gem install fluent-plugin-jfrog-metrics'
 
-Download it to a directory the user has permissions to write such as the `$JF_PRODUCT_DATA_INTERNAL` locations discussed above in the [Environment Configuration](#environment-configuration) section.
+```
 
-````text
-cd $JF_PRODUCT_DATA_INTERNAL
-wget https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz
-````
-
-Untar to create the folder:
-````text
-tar -xvf fluentd-1.11.0-linux-x86_64.tar.gz
-````
-Move into the new folder:
-
-````text
-cd fluentd-1.11.0-linux-x86_64
-````
 
 Configure `fluent.conf.*` according to the instructions mentioned in [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section and then run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file configured.
 
@@ -210,36 +187,6 @@ helm upgrade --install xray jfrog/xray --set xray.jfrogUrl=http://my-artifactory
        --set xray.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
        -f helm/xray-values.yaml
 ```
-
-### Kubernetes Deployment without Helm
-
-To modify existing Kubernetes based deployments without using Helm, users can use the zip installer for Linux:
-
-| OS            | Package Manager | Link |
-|---------------|-----------------|------|
-| Linux (x86_64)| ZIP             | https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz |
-
-Download it to a directory the user has permissions to write such as the `$JF_PRODUCT_DATA_INTERNAL` locations discussed above in the [Environment Configuration](#environment-configuration) section.
-
-````text
-cd $JF_PRODUCT_DATA_INTERNAL
-wget https://github.com/jfrog/log-analytics/raw/master/fluentd-installer/fluentd-1.11.0-linux-x86_64.tar.gz
-````
-
-Untar to create the folder:
-````text
-tar -xvf fluentd-1.11.0-linux-x86_64.tar.gz
-````
-Move into the new folder:
-
-````text
-cd fluentd-1.11.0-linux-x86_64
-````
-Configure `fluent.conf.*` according to the instructions mentioned in [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section and then run the fluentd wrapper with one argument pointed to the `fluent.conf.*` file configured.
-
-````text
-./fluentd $JF_PRODUCT_DATA_INTERNAL/fluent.conf.<product_name>
-````
 
 ## Fluentd Configuration for Datadog
 
