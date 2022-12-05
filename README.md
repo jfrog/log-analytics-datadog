@@ -9,7 +9,6 @@ The following document describes how to configure Datadog to gather metrics from
 1. [Environment Configuration](#environment-configuration)
 2. [Fluentd Installation](#fluentd-installation)
     * [OS / Virtual Machine](#os--virtual-machine)
-    * [Docker](#docker)
     * [Kubernetes Deployment with Helm](#kubernetes-deployment-with-helm)
 3. [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog)
     * [Configuration steps for Artifactory](#configuration-steps-for-artifactory)
