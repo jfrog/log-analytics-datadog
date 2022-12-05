@@ -120,11 +120,11 @@ In order to run fluentd as a docker image to send the log, siem and metrics data
 
 2. Once the version and process are listed successfully, build the intended docker image for the observability platform using the docker file,
 
-	* Download Dockerfile from [here](https://raw.githubusercontent.com/jfrog/log-analytics/master/docker-build/Dockerfile) to any directory which has write permissions.
+	* Download Dockerfile from [here](https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/docker-build/Dockerfile) to any directory which has write permissions.
 
 3. Download the Dockerenvfile_<observability_platform>.txt file needed to run Jfrog/FluentD Docker Images for the intended observability platform,
 
-	* Download Dockerenvfile_datadog.txt from [here](https://raw.githubusercontent.com/jfrog/log-analytics/master/docker-build/Dockerenvfile_datadog.txt) to the directory where the docker file was downloaded.
+	* Download Dockerenvfile_datadog.txt from [here](https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/docker-build/Dockerenvfile_datadog.txt) to the directory where the docker file was downloaded.
 
 ```text
 
