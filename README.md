@@ -4,7 +4,7 @@ The following document describes how to configure Datadog to gather metrics from
 
 ## Table of Contents
 
-`Note! You must follow the order of the steps throughout Datadog Configuration`
+`Note! You must follow the order of the steps throughout the Datadog Configuration`
 
 1. [Environment Configuration](#environment-configuration)
 2. [Fluentd Installation](#fluentd-installation)
