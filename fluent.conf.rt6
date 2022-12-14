@@ -115,7 +115,7 @@
 <match jfrog.**>
   @type datadog
   @id datadog_agent_jfrog_artifactory
-  api_key API_KEY
+  api_key DATADOG_API_KEY
   #optional
   include_tag_key true
   dd_source fluentd
