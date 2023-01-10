@@ -98,7 +98,7 @@
 </filter>
 <match jfrog.callhome>
   @type http
-  endpoint http://localhost:8081/artifactory/api/system/usage
+  url http://localhost:8081/artifactory/api/system/usage
   open_timeout 5
   content_type application/json
   <format>
