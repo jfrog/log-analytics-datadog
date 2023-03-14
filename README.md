@@ -155,11 +155,12 @@ Command example
 
 Recommended installation for Kubernetes is to utilize the helm chart with the associated values.yaml in this repo.
 
-| Product | Example Values File |
-|---------|-------------|
-| Artifactory | helm/artifactory-values.yaml |
+| Product        | Example Values File |
+|----------------|-------------|
+| Platform       | helm/jfrog-platform-values.yaml |
+| Artifactory    | helm/artifactory-values.yaml |
 | Artifactory HA | helm/artifactory-ha-values.yaml |
-| Xray | helm/xray-values.yaml |
+| Xray           | helm/xray-values.yaml |
 
 Update the values.yaml associated to the product you want to deploy with your Datadog settings.
 
@@ -167,10 +168,101 @@ Then deploy the helm chart as described below:
 
 Add JFrog Helm repository:
 
-```text
+```kubernetes helm
 helm repo add jfrog https://charts.jfrog.io
 helm repo update
 ```
+
+JFrog Platform ⎈:
+
+```textmate
+!!!Important Note!!!: Platform Chart Deployment shown here is for reference purpose only, 
+Kindly apply these charts only after reviewing the options and make necessary changes that suits your deployment
+```
+
+Pre-requisite for Observability integration with JFrog Platform charts
+
+First, install the JFrog Platform chart by configuring intended replicaCount for Artifactory, Xray and enable or disable the solutions
+
+Refer the sample yaml for reference, download [here](https://github.com/jfrog/log-analytics-datadog/blob/master/helm/jfrog-platform-values-without-datadog.yaml)
+
+```yaml
+
+installerInfo: '{ "productId": "Helm_datadog_artifactory/{{ .Chart.Version }}", "features": [ { "featureId": "ArtifactoryVersion/{{ default .Chart.AppVersion .Values.artifactory.image.version }}" }, { "featureId": "{{ if .Values.postgresql.enabled }}postgresql{{ else }}{{ .Values.database.type }}{{ end }}/0.0.0" }, { "featureId": "Platform/{{ default "kubernetes" .Values.installer.platform }}" },  { "featureId": "Channel/Helm_datadog_artifactory" } ] }'
+artifactory:
+  artifactory:
+    openMetrics:
+      enabled: true
+xray:
+  enabled: true
+  replicaCount: 1  
+insight:
+  enabled: false
+distribution:
+  enabled: false
+pipelines:
+  enabled: false
+rabbitmq:
+  enabled: true
+redis:
+  enabled: false
+
+```
+To install the JFrog Platform with the above said configurations run the following command, (note the namespaces and adjust as needed by your deployment requirement)
+
+```kubernetes helm
+helm upgrade --install jfrog-platform --namespace jfrog-platform jfrog/jfrog-platform -f jfrog-platform-values-without-datadog.yaml
+```
+
+Once the platform is accessible, login to the platform and perform the setup as directed on the UI.
+
+Second, when your JFrog Platform is ready and accessible, the following should be noted
+
+1. Access Token - click [here](https://www.jfrog.com/confluence/display/JFROG/Access+Tokens#AccessTokens-GeneratingScopedTokens) to know how to generate a admin scoped access token
+2. API Key - click [here](https://www.jfrog.com/confluence/display/RTF6X/Updating+Your+Profile#UpdatingYourProfile-APIKey) to generate an API Key with profile update process
+3. User - admin
+   
+Refer [Fluentd Configuration for Datadog](#fluentd-configuration-for-datadog) section for configuring the below parameters
+
+4. Datadog API Key - click [here](https://docs.datadoghq.com/account_management/api-app-keys/), to get the API Key which should be used to send data to Datadog
+
+Once the values are noted, download the file to apply the JFrog Platform Upgrade for Datadog from [here](https://github.com/jfrog/log-analytics-datadog/blob/master/helm/jfrog-platform-values.yaml)
+
+Replace the respective values for the following in the global segment of chart values, review the chart values and apply them accordingly
+
+```yaml
+global:
+   datadog:
+      apikey: datadog_api_key
+   jfrog:
+      observability:
+         metrics:
+            jpd_url: http://localhost:8082
+            jpd_url_nginx: http://jfrog-platform-artifactory-nginx
+            username: jfrog_user
+            apikey: jfrog_api_key
+            token: jfrog_token
+         branch: master
+```
+
+Once the values are replaced, apply the upgrade as mentioned
+
+1. Get the JFrog Platform Postgres Password and store it to a variable
+```shell
+export POSTGRES_PASSWORD=kubectl get secret -n jfrog-platform  jfrog-platform-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode
+```
+2. Using the password obtained, run the following upgrade command
+```kubernetes helm
+helm upgrade jfrog-platform --namespace jfrog-platform jfrog/jfrog-platform --set databaseUpgradeReady=true --set postgresql.postgresqlPassword=$POSTGRES_PASSWORD -f jfrog-platform-values.yaml
+```
+3. For getting metrics data kindly follow the documentation on Datadog agent based setup [here](https://github.com/jfrog/metrics/blob/main/datadog/README.md) 
+
+```textmate
+!!!Important Note!!!: Platform Chart Deployment shown here is for reference purpose only, 
+Kindly apply these charts only after reviewing the options and make necessary changes that suits your deployment
+```
+
+
 
 Replace placeholders with your ``masterKey`` and ``joinKey``. To generate each of them, use the command
 ``openssl rand -hex 32``
@@ -179,7 +271,7 @@ Artifactory ⎈:
 
 Replace the `datadog_api_key` at the end of the yaml file with apiKey from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/) and then run the following helm command:
 
-```text
+```kubernetes helm
 helm upgrade --install artifactory  jfrog/artifactory \
        --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
        --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
@@ -199,7 +291,7 @@ Note: Replace placeholders with your ``masterKey`` and ``joinKey``. To generate 
 
 Replace the `datadog_api_key` at the end of the yaml file with apiKey from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/) and then run the following helm command
 
-```text
+```kubernetes helm
 helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
        --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
        --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
@@ -220,7 +312,7 @@ Replace `jfrog_jpd_url` in `jfrog.siem.jpdUrl` with Artifactory JPD URL of the f
 
 Use the same `joinKey` as you used in Artifactory installation to allow Xray node to successfully connect to Artifactory.
 
-```text
+```kubernetes helm
 helm upgrade --install xray jfrog/xray --set xray.jfrogUrl=http://my-artifactory-nginx-url \
        --set xray.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
        --set xray.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
