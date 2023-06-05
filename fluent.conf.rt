@@ -360,8 +360,8 @@
   ## DATADOG ARTIFACTORY LOGS OUTPUT
   <match jfrog.**>
     @type datadog
-    @id datadog_agent_jfrog_artifactory
-    api_key #{ENV['DATADOG_API_KEY']}
+    @id jfrog_artifactory
+    api_key "#{ENV['DATADOG_API_KEY']}"
     #optional
     include_tag_key true
     dd_source jfrog_artifactory
