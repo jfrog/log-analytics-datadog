@@ -27,9 +27,9 @@
     enable_ruby true
     <record>
       app_id '251985503'
-      identity 'OnPremObservability-Datadog/1.0.0'
+      identity "#{ENV['JPD_URL']}"
       event 'datadog-artifactory-fluent-config'
-      properties ${return({"featureId" => "ArtifactoryVersion/" + record["version"]})}
+      properties ${return({"featureId" => "ArtifactoryVersion/" + record["version"], "productId" => "OnPremObservability-Datadog/1.0.0"})}
     </record>
   </filter>
   <match callhome>
@@ -312,6 +312,14 @@
     <record>
       repo ${record["request_url"].include?("/api/docker") && !record["request_url"].include?("/api/docker/null") && !record["request_url"].include?("/api/docker/v2") ? (record["request_url"].split('/')[3]) : ("")}
       image ${record["request_url"].include?("/api/docker") && !record["request_url"].include?("/api/docker/null") && !record["request_url"].include?("/api/docker/v2")  ? (record["request_url"].split('/')[5]) : ("")}
+    </record>
+  </filter>
+  <filter jfrog.rt.artifactory.request>
+    @type record_transformer
+    enable_ruby true
+    <record>
+      response_content_length ${record["response_content_length"].to_f}
+      request_content_length ${record["request_content_length"].to_f}
     </record>
   </filter>
   <filter jfrog.rt.frontend.request>
