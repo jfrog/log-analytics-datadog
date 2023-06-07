@@ -111,11 +111,11 @@
 </filter>
 <match jfrog.xray.siem.**>
   @type datadog
-  @id jfrog_artifactory
+  @id jfrog_xray
   api_key "#{ENV['DATADOG_API_KEY']}"
   #optional
   include_tag_key true
-  dd_source jfrog_artifactory
+  dd_source jfrog_xray
   <buffer>
     flush_interval 1s
     # frequency of the buffer flush
