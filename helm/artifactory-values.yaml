@@ -1,4 +1,4 @@
-installerInfo: '{ "productId": "Helm_datadog_artifactory/{{ .Chart.Version }}", "features": [ { "featureId": "ArtifactoryVersion/{{ default .Chart.AppVersion .Values.artifactory.image.version }}" }, { "featureId": "{{ if .Values.postgresql.enabled }}postgresql{{ else }}{{ .Values.database.type }}{{ end }}/0.0.0" }, { "featureId": "Platform/{{ default "kubernetes" .Values.installer.platform }}" },  { "featureId": "Channel/Helm_datadog_artifactory" } ] }'
+installerInfo: '{ "productId": "OnPremObservability-Datadog/1.0.0", "features": [ { "featureId": "ArtifactoryVersion/{{ default .Chart.AppVersion .Values.artifactory.image.version }}" }, { "featureId": "{{ if .Values.postgresql.enabled }}postgresql{{ else }}{{ .Values.database.type }}{{ end }}/0.0.0" }, { "featureId": "Platform/{{ default "kubernetes" .Values.installer.platform }}" },  { "featureId": "Channel/OnPremObservability-Datadog-Helm" } ] }'
 artifactory:
   customInitContainersBegin: |
     - name: "download-fluentd-conf-on-persistent-volume"
@@ -9,25 +9,13 @@ artifactory:
         - '-c'
         - >
           mkdir -p {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/;
-          curl https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.rt -o {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf
-      volumeMounts:
-        - mountPath: "{{ .Values.artifactory.persistence.mountPath }}"
-          name: artifactory-volume
-    - name: "prepare-fluentd-conf-on-persistent-volume"
-      image: "{{ .Values.initContainerImage }}"
-      imagePullPolicy: "{{ .Values.artifactory.image.pullPolicy }}"
-      command:
-        - 'sh'
-        - '-c'
-        - >
-          sed 's/DATADOG_API_KEY/{{ .Values.datadog.apiKey }}/' {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
-          mv {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf;
+          curl https://raw.githubusercontent.com/jfrog/log-analytics-datadog/PTRENG-5167-UpdatingDatadog/fluent.conf.rt -o {{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf;
       volumeMounts:
         - mountPath: "{{ .Values.artifactory.persistence.mountPath }}"
           name: artifactory-volume
   customSidecarContainers: |
     - name: "artifactory-fluentd-sidecar"
-      image: "partnership-public-images.jfrog.io/fluentd/fluentd:1.13.2"
+      image: "partnership-public-images.jfrog.io/fluentd/fluentd:1.23.0"
       imagePullPolicy: "IfNotPresent"
       volumeMounts:
         - mountPath: "{{ .Values.artifactory.persistence.mountPath }}"
@@ -35,7 +23,23 @@ artifactory:
       env:
         - name: JF_PRODUCT_DATA_INTERNAL
           value: {{ .Values.artifactory.persistence.mountPath }}
+        - name: JPD_URL
+          value: {{ .Values.jfrog.observability.jpd_url }}
+        - name: JPD_ADMIN_USERNAME
+          value: {{ .Values.jfrog.observability.username }}
+        - name: JFROG_ADMIN_TOKEN
+          value: {{ .Values.jfrog.observability.access_token }}
+        - name: COMMON_JPD
+          value: {{ .Values.jfrog.observability.common_jpd | quote }}
+        - name: DATADOG_API_KEY
+          value: {{ .Values.datadog.api_key }}
         - name: FLUENTD_CONF
           value: ../../../../{{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf
 datadog:
-  apiKey: datadog_api_key
+  api_key: DATADOG_API_KEY
+jfrog:
+  observability:
+    jpd_url: JPD_URL
+    username: JPD_ADMIN_USERNAME
+    access_token: JFROG_ADMIN_TOKEN
+    common_jpd: COMMON_JPD
