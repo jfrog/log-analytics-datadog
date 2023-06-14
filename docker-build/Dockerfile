@@ -14,22 +14,21 @@ ENV TGT_PLATFORM=$TARGET
 USER root
 
 ## Install JFrog Plugins
+RUN fluent-gem install fluent-plugin-concat
+RUN fluent-gem install fluent-plugin-datadog
 RUN fluent-gem install fluent-plugin-jfrog-siem
 RUN fluent-gem install fluent-plugin-jfrog-metrics
+RUN fluent-gem install fluent-plugin-jfrog-send-metrics
 
-## Install custom Fluentd plugins
-RUN if [ "$TGT_PLATFORM" = "DATADOG" ] ; then echo "Downloading the fluentd plugin for $TGT_PLATFORM "; fluent-gem install fluent-plugin-datadog; else echo "Not Downloading"; fi
+# Install prerequisites
+RUN apt-get update && apt-get install -y curl
+CMD /bin/bash
 
 ## Download Config Files
-RUN if [ "$SRC_PLATFORM" = "JFRT" ] ; then echo "Downloading the fluentd config file for $SRC_PLATFORM and $TGT_PLATFORM "; curl https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.rt -o /opt/bitnami/fluentd/conf/fluentd.conf; else echo "Not Downloading"; fi
-RUN if [ "$SRC_PLATFORM" = "JFXRAY" ] ; then echo "Downloading the fluentd config file for $SRC_PLATFORM and $TGT_PLATFORM "; curl https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.xray -o /opt/bitnami/fluentd/conf/fluentd.conf; else echo "Not Downloading"; fi
+RUN if [ "$SRC_PLATFORM" = "JFRT" ] ; then echo "Downloading the fluentd config file for $SRC_PLATFORM and $TGT_PLATFORM "; curl https://raw.githubusercontent.com/jfrog/log-analytics-datadog/PTRENG-5167-UpdatingDatadog/fluent.conf.rt -o /opt/bitnami/fluentd/conf/fluentd.conf; else echo "Not Downloading"; fi
+RUN if [ "$SRC_PLATFORM" = "JFXRAY" ] ; then echo "Downloading the fluentd config file for $SRC_PLATFORM and $TGT_PLATFORM "; curl https://raw.githubusercontent.com/jfrog/log-analytics-datadog/PTRENG-5167-UpdatingDatadog/fluent.conf.xray -o /opt/bitnami/fluentd/conf/fluentd.conf; else echo "Not Downloading"; fi
 
-
-ENTRYPOINT if [ "$TGT_PLATFORM" = "DATADOG" ] ; then  sed -i
-                                             -e "s/DATADOG_API_KEY/$DATADOG_API_KEY/g" \
-                                             -e "s/JPD_URL/$JPD_URL/" \
-                                             -e "s/JPD_USER_NAME/$JPD_USER_NAME/" \
-                                             -e "s/JPD_API_KEY/$JPD_API_KEY/" /opt/bitnami/fluentd/conf/fluentd.conf && fluentd -v -c /opt/bitnami/fluentd/conf/fluentd.conf; fi
+ENTRYPOINT if [ "$TGT_PLATFORM" = "DATADOG" ] ; then cat /opt/bitnami/fluentd/conf/fluentd.conf; fluentd -v -c /opt/bitnami/fluentd/conf/fluentd.conf; fi
 
 USER 1001
 
