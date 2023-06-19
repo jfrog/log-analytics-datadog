@@ -135,6 +135,7 @@
   #optional
   include_tag_key true
   dd_source jfrog_xray
+  host http-intake.logs.datadoghq.com
   <buffer>
     flush_interval 1s
     # frequency of the buffer flush
@@ -335,6 +336,7 @@
     #optional
     include_tag_key true
     dd_source jfrog_xray
+    host http-intake.logs.datadoghq.com
     <buffer>
       flush_interval 1s
       # frequency of the buffer flush

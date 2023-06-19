@@ -392,6 +392,7 @@
     #optional
     include_tag_key true
     dd_source jfrog_artifactory
+    host http-intake.logs.datadoghq.com
     <buffer>
       flush_interval 1s
       # frequency of the buffer flush
