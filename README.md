@@ -15,7 +15,7 @@ The following document describes how to configure Datadog to gather logs, metric
 
 ## Datadog Setup
 
-Datadog setup can be done by going through the below onboarding steps or by using apiKey directly if one exists. If an apiKey exists, use the Datadog Fluentd plugin to forward logs directly from Fluentd to your datadog account.
+Datadog setup can be done by going through the below onboarding steps or by using apiKey directly if one exists. If an apiKey exists, skip the steps below and move on to [Fluentd Installation](#fluentd-installation) to forward logs directly to your datadog account.
 
 * Create an account in Datadog
 * Run the datadog agent in your kubernetes cluster by deploying it with a helm chart
@@ -249,11 +249,15 @@ This dashboard is divided into three sections Application, Audit and Requests
 #### JFrog Artifactory Metrics dashboard
 This dashboard tracks Artifactory System Metrics, JVM memory, Garbabe Collection, Database Connections, and HTTP Connections metrics
 
-#### JFrog Xray Metrics Dashboard
-This dashboard tracks System Metrics, and data metrics about Scanned Artifacts and Scanned Components
+#### JFrog Xray Logs dashboard
+Thi dashboard provides a summary of access, service and traffic log volumes associated with Xray. Additionally, customers are also able to track various HTTP response codes, HTTP 500 errors, and log errors for greater operational insight 
 
 #### JFrog Xray Violations Dashboard
 This dashboard provides an aggregated summary of all the license violations and security vulnerabilities found by Xray. Information is segment by watch policies and rules. Trending information is provided on the type and severity of violations over time, as well as, insights on most frequently occurring CVEs, top impacted artifacts and components.
+
+#### JFrog Xray Metrics Dashboard
+This dashboard tracks System Metrics, and data metrics about Scanned Artifacts and Scanned Components
+
 
 ## Demo Requirements
 
