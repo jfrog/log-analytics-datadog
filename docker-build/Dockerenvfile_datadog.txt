@@ -1,6 +1,0 @@
-JFROG_PRODUCT=rt
-JF_PRODUCT_DATA_INTERNAL=path_to_jfrog_logs
-JPD_URL=http:\/\/change_me.jfrog.io
-JPD_USER_NAME=change_me
-JPD_API_KEY=change_me
-DATADOG_API_KEY=change_me

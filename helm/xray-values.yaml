@@ -3,15 +3,6 @@ databaseUpgradeReady: true
 xray:
   jfrogUrl: http://xray-xray.rt:8082
 replicaCount: 1
-postgresql:
-  postgresqlPassword: xray
-rabbitmq-ha:
-  enabled: false
-rabbitmq:
-  enabled: true
-  auth:
-    username: guest
-    password: guest
 common:
   customInitContainersBegin: |
     - name: "download-fluentd-conf-on-persistent-volume"
@@ -22,31 +13,13 @@ common:
         - '-c'
         - >
           mkdir -p {{ .Values.xray.persistence.mountPath }}/etc/fluentd/;
-          curl https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.xray -o {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf
-      volumeMounts:
-        - mountPath: "{{ .Values.xray.persistence.mountPath }}"
-          name: data-volume
-    - name: "prepare-fluentd-conf-on-persistent-volume"
-      image: "{{ .Values.initContainerImage }}"
-      imagePullPolicy: "{{ .Values.imagePullPolicy }}"
-      command:
-        - 'sh'
-        - '-c'
-        - >
-          sed 's/DATADOG_API_KEY/{{ .Values.datadog.apiKey }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
-          mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
-          sed 's/JPD_USER_NAME/{{ .Values.jfrog.siem.username }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
-          mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
-          sed 's/JPD_API_KEY/{{ .Values.jfrog.siem.apikey }}/' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
-          mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
-          sed 's|JPD_URL|{{ .Values.xray.jfrogUrl }}|g' {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf > {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new;
-          mv {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf.new {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
+          curl https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.xray -o {{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf;
       volumeMounts:
         - mountPath: "{{ .Values.xray.persistence.mountPath }}"
           name: data-volume
   customSidecarContainers: |
     - name: "xray-platform-fluentd-sidecar"
-      image: "partnership-public-images.jfrog.io/fluentd/fluentd:1.13.2"
+      image: "partnership-public-images.jfrog.io/fluentd/fluentd:1.27.0"
       imagePullPolicy: "IfNotPresent"
       volumeMounts:
         - mountPath: "{{ .Values.xray.persistence.mountPath }}"
@@ -56,9 +29,21 @@ common:
           value: {{ .Values.xray.persistence.mountPath }}
         - name: FLUENTD_CONF
           value: ../../../../{{ .Values.xray.persistence.mountPath }}/etc/fluentd/fluentd.conf
+        - name: JPD_URL
+          value: {{ .Values.jfrog.observability.jpd_url }}
+        - name: JPD_ADMIN_USERNAME
+          value: {{ .Values.jfrog.observability.username }}
+        - name: JFROG_ADMIN_TOKEN
+          value: {{ .Values.jfrog.observability.access_token }}
+        - name: COMMON_JPD
+          value: {{ .Values.jfrog.observability.common_jpd | quote }}
+        - name: DATADOG_API_KEY
+          value: {{ .Values.datadog.api_key }}
 datadog:
-  apiKey: datadog_api_key
+  api_key: DATADOG_API_KEY
 jfrog:
-  siem:
-    username: jfrog_user
-    apikey: jfrog_api_key
+  observability:
+    jpd_url: JPD_URL
+    username: JPD_ADMIN_USERNAME
+    access_token: JFROG_ADMIN_TOKEN
+    common_jpd: COMMON_JPD

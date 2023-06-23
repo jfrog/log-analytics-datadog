@@ -1,6 +1,12 @@
 # JFrog Log Analytics Changelog
 All changes to the log analytics integration will be documented in this file.
 
+## [1.0.0] - Jun 22, 2023
+* Supporting only OS/VM, Docker and k8s installation types
+* Adding .env files instead of setting/filling variables in fluentd config
+* Adding jfrog and heap callhome in fluentd config
+* Supporting only Artifactory and Xray Fluentd config
+
 ## [0.8.0] - Feb 09, 2022
 * Added call home functionality to artifactory fluent configuration.
 
