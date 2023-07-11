@@ -378,6 +378,10 @@
     </record>
     remove_keys timestamp
   </filter>
+  <filter jfrog.**>
+    @type record_transformer
+    remove_keys timestamp
+  </filter>
 
   # TEST OUTPUT
   #<match **>

@@ -326,6 +326,9 @@
       hostname "#{Socket.gethostname}"
       log_source ${tag}
     </record>
+  </filter>
+  <filter jfrog.xray.**>
+    @type record_transformer
     remove_keys timestamp
   </filter>
 
