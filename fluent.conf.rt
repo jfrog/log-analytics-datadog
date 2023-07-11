@@ -376,6 +376,7 @@
       hostname "#{Socket.gethostname}"
       log_source ${tag}
     </record>
+    remove_keys timestamp
   </filter>
 
   # TEST OUTPUT
