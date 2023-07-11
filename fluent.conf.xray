@@ -326,6 +326,7 @@
       hostname "#{Socket.gethostname}"
       log_source ${tag}
     </record>
+    remove_keys timestamp
   </filter>
 
   # DATADOG XRAY LOGS OUTPUT
