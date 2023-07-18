@@ -218,6 +218,20 @@
     time_format %Y-%m-%dT%H:%M:%S%:z
   </parse>
 </source>
+<source>
+  @type tail
+  @id artifactory_request_out_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/artifactory-request-out.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/artifactory-request-out.log.pos"
+  tag jfrog.rt.request.out
+  read_from_head true
+  <parse>
+    @type regexp
+    expression ^(?<log_timestamp>[^ ]*)\|(?<trace_id>[^\|]*)\|(?<remote_repo_name>[^\|]*)\|(?<username>[^\|]*)\|(?<request_method>[^\|]*)\|(?<remote_url>[^\|]*)\|(?<return_status>[^\|]*)\|(?<response_content_length>[^\|]*)\|(?<request_content_length>[^\|]*)\|(?<request_duration>[^\|]*)$
+    time_key log_timestamp
+    time_format %Y-%m-%dT%H:%M:%S.%LZ
+  </parse>
+</source>
 ## ACCESS LOG
 <source>
   @type tail
