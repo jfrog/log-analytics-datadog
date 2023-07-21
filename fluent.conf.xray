@@ -219,7 +219,7 @@
   pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-request.log.pos"
   tag jfrog.xray.router.request
   <parse>
-    @type json
+    @type none
   </parse>
 </source>
 <source>
