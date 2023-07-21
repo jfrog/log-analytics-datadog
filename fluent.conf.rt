@@ -378,7 +378,8 @@
     api_key "#{ENV['DATADOG_API_KEY']}"
     #optional
     include_tag_key true
-    dd_source jfrog_artifactory
+    dd_source jfrog_platform
+    service jfrog_artifactory
     host http-intake.logs.datadoghq.com
     <buffer>
       flush_interval 1s
