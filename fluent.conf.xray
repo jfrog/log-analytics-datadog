@@ -134,7 +134,8 @@
   api_key "#{ENV['DATADOG_API_KEY']}"
   #optional
   include_tag_key true
-  dd_source jfrog_xray
+  dd_source jfrog_platform
+  service jfrog_xray
   host http-intake.logs.datadoghq.com
   <buffer>
     flush_interval 1s
@@ -208,8 +209,6 @@
   <parse>
       @type regexp
       expression ^(?<log_timestamp>[^ ]*) \[(?<service_type>[^\]]*)\] \[(?<log_level>[^\]]*)\] \[(?<trace_id>[^\]]*)\] \[(?<class_line_number>.*)\] \[(?<thread>.*)\] -(?<message>.+)$
-      time_key log_timestamp
-      time_format %Y-%m-%dT%H:%M:%S.%LZ
   </parse>
 </source>
 # REQUEST LOGS
@@ -220,9 +219,7 @@
   pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-request.log.pos"
   tag jfrog.xray.router.request
   <parse>
-    @type json
-    time_key time
-    time_format %Y-%m-%dT%H:%M:%S%:z
+    @type none
   </parse>
 </source>
 <source>
@@ -234,8 +231,6 @@
   <parse>
     @type regexp
     expression ^(?<log_timestamp>[^ ]*)\|(?<trace_id>[^ ]*)\|(?<remote_address>[^|]++)\|(?<username>[^\|]*)\|(?<request_method>[^\|]*)\|(?<request_url>[^\|]*)\|(?<return_status>[^\|]*)\|(?<response_content_length>[^\|]*)\|(?<request_duration>.*)$
-    time_key log_timestamp
-    time_format %Y-%m-%dT%H:%M:%S.%LZ
   </parse>
 </source>
 
@@ -269,8 +264,6 @@
         @type multiline
         format_firstline /\d{4}-\d{1,2}-\d{1,2}/
         format1 /^(?<log_timestamp>[^ ]*) \[(?<service_type>[^\]]*)\] \[(?<log_level>[^\]]*)\] \[(?<trace_id>[^\]]*)\] \[(?<class_line_number>.*)\] \[(?<thread>.*)\] (?<message>.*)$/
-        time_key log_timestamp
-        time_format %Y-%m-%dT%H:%M:%S.%LZ
     </parse>
     emit_invalid_record_to_error false
   </filter>
@@ -281,8 +274,6 @@
         @type multiline
         format_firstline /\d{4}-\d{1,2}-\d{1,2}/
         format1 /^(?<log_timestamp>[^ ]*) \[(?<service_type>[^\]]*)\] \[(?<log_level>[^\]]*)\] \[(?<trace_id>[^\]]*)\] \[(?<class_line_number>.*)\] \[(?<thread>.*)\] (?<message>.*)$/
-        time_key log_timestamp
-        time_format %Y-%m-%dT%H:%M:%S.%LZ
     </parse>
     emit_invalid_record_to_error false
   </filter>
@@ -293,8 +284,6 @@
         @type multiline
         format_firstline /\d{4}-\d{1,2}-\d{1,2}/
         format1 /^(?<log_timestamp>[^ ]*) \[(?<service_type>[^\]]*)\] \[(?<log_level>[^\]]*)\] \[(?<trace_id>[^\]]*)\] \[(?<class_line_number>.*)\] \[(?<thread>.*)\] (?<message>.*)$/
-        time_key log_timestamp
-        time_format %Y-%m-%dT%H:%M:%S.%LZ
     </parse>
   </filter>
   <filter jfrog.xray.router.service>
@@ -304,8 +293,6 @@
         @type multiline
         format_firstline /\d{4}-\d{1,2}-\d{1,2}/
         format1 /^(?<log_timestamp>[^ ]*) \[(?<service_type>[^\]]*)\] \[(?<log_level>[^\]]*)\] \[(?<trace_id>[^\]]*)\] \[(?<class_line_number>.*)\] \[(?<thread>.*)\] \[\] -(?<message>.*)$/
-        time_key log_timestamp
-        time_format %Y-%m-%dT%H:%M:%S.%LZ
     </parse>
   </filter>
   <filter jfrog.xray.server.service>
@@ -315,8 +302,6 @@
         @type multiline
         format_firstline /\d{4}-\d{1,2}-\d{1,2}/
         format1 /^(?<log_timestamp>[^ ]*) \[(?<service_type>[^\]]*)\] \[(?<log_level>[^\]]*)\] \[(?<trace_id>[^\]]*)\] \[(?<class_line_number>.*)\] \[(?<thread>.*)\] (?<message>.*)$/
-        time_key log_timestamp
-        time_format %Y-%m-%dT%H:%M:%S.%LZ
     </parse>
   </filter>
   ## ALL LOGS
@@ -335,7 +320,8 @@
     api_key "#{ENV['DATADOG_API_KEY']}"
     #optional
     include_tag_key true
-    dd_source jfrog_xray
+    dd_source jfrog_platform
+    service jfrog_xray
     host http-intake.logs.datadoghq.com
     <buffer>
       flush_interval 1s
