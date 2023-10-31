@@ -136,7 +136,7 @@ For Artifactory installation, you can download the `.env` file [here](https://ra
 
 Create a secret for JFrog's admkin token - [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) using any of the following methods
 ```shell
-kubectl create secret generic jfrog-admin-token --from-file=<path_to_token_file>token
+kubectl create secret generic jfrog-admin-token --from-file=token=<path_to_token_file>
 
 OR
 
@@ -174,7 +174,7 @@ kubectl create secret generic artifactory-license --from-file=<path_to_license_f
 ```
 Create another secret for JFrog's admin token - [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) using any of the following methods
 ```shell
-kubectl create secret generic jfrog-admin-token --from-file=<path_to_token_file>token
+kubectl create secret generic jfrog-admin-token --from-file=token=<path_to_token_file>
 
 OR
 
@@ -210,7 +210,7 @@ helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
 
 Create a secret for JFrog's admin token - [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) using any of the following methods if it doesn't exist
 ```shell
-kubectl create secret generic jfrog-admin-token --from-file=<path_to_token_file>token
+kubectl create secret generic jfrog-admin-token --from-file=token=<path_to_token_file>
 
 OR
 
