@@ -6,11 +6,12 @@ The following document describes how to configure Datadog to gather logs, metric
 
 `Note! You must follow the order of the steps throughout Datadog Configuration`
 1. [Datadog Setup](#datadog-setup)
-2. [Fluentd Installation](#fluentd-installation)
+2. [JFrog Metrics Setup](#metrics-setup)
+3. [Fluentd Installation](#fluentd-installation)
    * [OS / Virtual Machine](#os--virtual-machine)
    * [Docker](#docker)
    * [Kubernetes Deployment with Helm](#kubernetes-deployment-with-helm)
-3. [Dashboards](#dashboards)
+4. [Dashboards](#dashboards)
 5. [References](#references)
 
 ## Datadog Setup
@@ -25,6 +26,18 @@ Datadog setup can be done by going through the below onboarding steps or by usin
 Once datadog is setup, we can access logs via Logs > Search. We can also select the specific source that we want to get logs from. Adding proper metadata is the key to unlocking the full potential of your logs in datadog. By default, the hostname and timestamp fields should be remapped.
 
 * Add all attributes as facets from Facets > Add on the left side of the screen in Logs > search
+
+## JFrog Metrics Setup
+To enable metrics in Artifactory, make the following configuration changes to the [Artifactory System YAML](https://www.jfrog.com/confluence/display/JFROG/Artifactory+System+YAML)
+```yaml
+artifactory:
+    metrics:
+        enabled: true
+```
+Once this configuration is done and the application is restarted, metrics will be available in Open Metrics Format
+
+Metrics are enabled by default in Xray. 
+For kubernetes based installs, openMetrics are enabled in the helm install commands listed below
 
 ## Fluentd Installation
 
@@ -42,7 +55,7 @@ Ensure you have access to the Internet from a virtual machine (VM). We recommend
 ##### Gem based install
 For a Gem-based install, the Ruby Interpreter must be setup first. You can install the Ruby Interpreter by doing the following:
 
-1. Install Ruby Version Manager (RVM) outlined in the [RVM documentation]https://rvm.io/rvm/install#installation-explained.
+1. Install Ruby Version Manager (RVM) outlined in the [RVM documentation](https://rvm.io/rvm/install#installation-explained).
    * Use the `SUDO` command  for multi-user installation. For more information, see the [RVM troubleshooting documentation](https://rvm.io/support/troubleshooting#sudo).
 
 2. After the RVM installation is complete, execute the command 'rvm -v' to verify.
@@ -159,6 +172,7 @@ source .env_jfrog
 helm upgrade --install artifactory  jfrog/artifactory \
        --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
        --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
+       --set artifactory.openMetrics.enabled=true \
        --set datadog.api_key=$DATADOG_API_KEY  \
        --set jfrog.observability.jpd_url=$JPD_URL \
        --set jfrog.observability.username=$JPD_ADMIN_USERNAME \
@@ -199,6 +213,7 @@ source .env_jfrog
 helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
        --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
        --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
+       --set artifactory.openMetrics.enabled=true \
        --set datadog.api_key=$DATADOG_API_KEY  \
        --set jfrog.observability.jpd_url=$JPD_URL \
        --set jfrog.observability.username=$JPD_ADMIN_USERNAME \
