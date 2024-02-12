@@ -2,6 +2,10 @@
 
 The following document describes how to configure Datadog to gather logs, metrics and violations from Artifactory and Xray through the use of FluentD.
 
+## Versions Supported
+
+This integration is last tested with Artifactory 7.71.11 and Xray 3.88.12 versions.
+
 ## Table of Contents
 
 `Note! You must follow the order of the steps throughout Datadog Configuration`
@@ -32,6 +36,8 @@ To enable metrics in Artifactory, make the following configuration changes to th
 ```yaml
 artifactory:
     metrics:
+        enabled: true
+    openMetrics:
         enabled: true
 ```
 Once this configuration is done and the application is restarted, metrics will be available in Open Metrics Format
@@ -77,7 +83,7 @@ gem install fluent-plugin-jfrog-send-metrics
 ```
 
 ##### Configure Fluentd
-We rely on environment variables to stream log files to your observability dashboards. Ensure that you fill in the `.env` file with the correct values. You can download the `.env` file [here](https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/.env_jfrog).
+We rely on environment variables to stream log files to your observability dashboards. Ensure that you fill in the `.env` file with the correct values. You can download the `.env` file [here](https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/jfrog.env).
 
 * **JF_PRODUCT_DATA_INTERNAL**: The environment variable JF_PRODUCT_DATA_INTERNAL must be defined to the correct location. For each JFrog service, you can find its active log files in the `$JFROG_HOME/<product>/var/log` directory
 * **DATADOG_API_KEY**: API Key from [Datadog](https://app.datadoghq.com/organization-settings/api-keys)
@@ -89,7 +95,7 @@ We rely on environment variables to stream log files to your observability dashb
 Apply the `.env` files and run the fluentd wrapper with the following command, and note that the argument points to the `fluent.conf.*` file previously configured:
 
 ```shell
-source .env_jfrog
+source jfrog.env
 ./fluentd $JF_PRODUCT_DATA_INTERNAL/fluent.conf.<product_name>
 ```
 
@@ -100,7 +106,7 @@ In order to run FluentD as a docker image to send the logs, violations, and metr
 
 2. If the version and process are listed successfully, build the intended docker image for Datadog using the docker file. You can download [this Dockerfile]https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/docker-build/Dockerfile to any directory that has write permissions.
 
-3. Download the `Dockerenvfile.txt` file needed to run `Jfrog/FluentD` Docker Images for Datadog. You can download [this Dockerenvfile.txt]https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/docker-build/Dockerenvfile.txt to the directory where the docker file was downloaded.
+3. Download the `docker.env` file needed to run `Jfrog/FluentD` Docker Images for Datadog. You can download [this docker.env]https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/docker-build/docker.env to the directory where the docker file was downloaded.
 
 4. Execute the following command to build the docker image: `docker build --build-arg SOURCE="JFRT" --build-arg TARGET="DATADOG" -t <image_name>`. For example:
 
@@ -108,7 +114,7 @@ In order to run FluentD as a docker image to send the logs, violations, and metr
      docker build --build-arg SOURCE="JFRT" --build-arg TARGET="DATADOG" -t jfrog/fluentd-datadog-rt .'
     ```
 
-5. Fill out the necessary information in the Dockerenvfile.txt file:
+5. Fill out the necessary information in the docker.env file:
 
    * **JF_PRODUCT_DATA_INTERNAL**: The environment variable JF_PRODUCT_DATA_INTERNAL must be defined to the correct location. For each JFrog service you will find its active log files in the `$JFROG_HOME/<product>/var/log` directory
    * **DATADOG_API_KEY**: API Key from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/)
@@ -117,12 +123,12 @@ In order to run FluentD as a docker image to send the logs, violations, and metr
    * **JFROG_ADMIN_TOKEN**: Artifactory [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) for authentication
    * **COMMON_JPD**: This flag should be set as true only for non-kubernetes installations or installations where JPD base URL is same to access both Artifactory and Xray (ex: https://sample_base_url/artifactory or https://sample_base_url/xray)
 
-6. Execute 'docker run -it --name jfrog-fluentd-datadog-rt -v <path_to_logs>:/var/opt/jfrog/artifactory --env-file Dockerenvfile.txt <image_name>'
+6. Execute 'docker run -it --name jfrog-fluentd-datadog-rt -v <path_to_logs>:/var/opt/jfrog/artifactory --env-file docker.env <image_name>'
 
    The `<path_to_logs>` should be an absolute path where the Jfrog Artifactory Logs folder resides, such as a Docker based Artifactory Installation like`/var/opt/jfrog/artifactory/var/logs` on the docker host. For example:
 
     ```shell
-     docker run -it --name jfrog-fluentd-datadog-rt -v $JFROG_HOME/artifactory/var/:/var/opt/jfrog/artifactory --env-file Dockerenvfile.txt jfrog/fluentd-datadog-rt
+     docker run -it --name jfrog-fluentd-datadog-rt -v $JFROG_HOME/artifactory/var/:/var/opt/jfrog/artifactory --env-file docker.env jfrog/fluentd-datadog-rt
     ```
 
 
@@ -145,81 +151,111 @@ Replace placeholders with your ``masterKey`` and ``joinKey``. To generate each o
 ``openssl rand -hex 32``
 
 #### Artifactory ⎈:
-For Artifactory installation, you can download the `.env` file [here](https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/.env_jfrog). Fill in the `.env_jfrog` file with the correct values:
 
-Create a secret for JFrog's admkin token - [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) using any of the following methods
-```shell
-kubectl create secret generic jfrog-admin-token --from-file=token=<path_to_token_file>
+1. Skip this step if you already have Artifactory installed. Else, install Artifactory using the command below
+    ```shell
+    helm upgrade --install artifactory  jfrog/artifactory \
+           --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
+           --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
+           --set artifactory.license.secret=artifactory-license \
+           --set artifactory.license.dataKey=artifactory.cluster.license \
+           --set artifactory.metrics.enabled=true \
+           --set artifactory.openMetrics.enabled=true
+    ```
 
-OR
+2. Create a secret for JFrog's admin token - [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) using any of the following methods
+    ```shell
+    kubectl create secret generic jfrog-admin-token --from-file=token=<path_to_token_file>
+    
+    OR
+    
+    kubectl create secret generic jfrog-admin-token --from-literal=token=<JFROG_ADMN_TOKEN>
+    ```
+3. For Artifactory installation, download the .env file from [here](https://github.com/jfrog/log-analytics-datadog/raw/master/helm/jfrog_helm.env). Fill in the jfrog_helm.env file with correct values.
 
-kubectl create secret generic jfrog-admin-token --from-literal=token=<JFROG_ADMN_TOKEN>
-```
+   * **JF_PRODUCT_DATA_INTERNAL**: Helm based installs will already have this defined based upon the underlying Docker images. Not a required field for k8s installation
+   * **DATADOG_API_KEY**: API Key from [Datadog](https://app.datadoghq.com/organization-settings/api-keys)
+   * **JPD_URL**: Artifactory JPD URL of the format `http://<ip_address>`
+   * **JPD_ADMIN_USERNAME**: Artifactory username for authentication
+   * **COMMON_JPD**: This flag should be set as true only for non-Kubernetes installations or installations where the JPD base URL is the same to access both Artifactory and Xray (for example, `https://sample_base_url/artifactory` or `https://sample_base_url/xray`)
 
-* **JF_PRODUCT_DATA_INTERNAL**: Helm based installs will already have this defined based upon the underlying Docker images. Not a required field for k8s installation
-* **DATADOG_API_KEY**: API Key from [Datadog](https://app.datadoghq.com/organization-settings/api-keys)
-* **JPD_URL**: Artifactory JPD URL of the format `http://<ip_address>`
-* **JPD_ADMIN_USERNAME**: Artifactory username for authentication
-* **JFROG_ADMIN_TOKEN**: For security reasons, this value will be pulled from the secret jfrog-admin-token created in the step above
-* **COMMON_JPD**: This flag should be set as true only for non-Kubernetes installations or installations where the JPD base URL is the same to access both Artifactory and Xray (for example, `https://sample_base_url/artifactory` or `https://sample_base_url/xray`)
+   Apply the .env files using the helm command below
 
-Apply the `.env` files and run the helm command below
-
-```shell
-source .env_jfrog
-```
-```shell
-helm upgrade --install artifactory  jfrog/artifactory \
-       --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
-       --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
-       --set artifactory.openMetrics.enabled=true \
-       --set datadog.api_key=$DATADOG_API_KEY  \
-       --set jfrog.observability.jpd_url=$JPD_URL \
-       --set jfrog.observability.username=$JPD_ADMIN_USERNAME \
-       --set jfrog.observability.common_jpd=$COMMON_JPD \
-       -f helm/artifactory-values.yaml
-```
+   ````shell
+   source jfrog_helm.env
+   ````
+4. Postgres password is required to upgrade Artifactory. Run the following command to get the current password
+   ```shell
+   POSTGRES_PASSWORD=$(kubectl get secret artifactory-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
+   ```
+5. Upgrade Artifactory installation using the command below
+    ```shell
+    helm upgrade --install artifactory jfrog/artifactory \
+           --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
+           --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
+           --set artifactory.metrics.enabled=true --set artifactory.openMetrics.enabled=true \
+           --set databaseUpgradeReady=true --set postgresql.postgresqlPassword=$POSTGRES_PASSWORD --set nginx.service.ssloffload=true \
+           --set datadog.api_key=$DATADOG_API_KEY  \
+           --set jfrog.observability.jpd_url=$JPD_URL \
+           --set jfrog.observability.username=$JPD_ADMIN_USERNAME \
+           --set jfrog.observability.common_jpd=$COMMON_JPD \
+           -f helm/artifactory-values.yaml
+    ```
 
 #### Artifactory-HA ⎈:
-For an HA installation, create a license secret on your cluster prior to installation:
 
-```shell
-kubectl create secret generic artifactory-license --from-file=<path_to_license_file>artifactory.cluster.license 
-```
-Create another secret for JFrog's admin token - [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) using any of the following methods
-```shell
-kubectl create secret generic jfrog-admin-token --from-file=token=<path_to_token_file>
-
-OR
-
-kubectl create secret generic jfrog-admin-token --from-literal=token=<JFROG_ADMN_TOKEN>
-```
-
-Download the [.env file here](https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/.env_jfrog). Populate the `.env_jfrog` file with correct values:
-
-* **JF_PRODUCT_DATA_INTERNAL**: Helm based installs will already have this defined based upon the underlying Docker images. Not a required field for k8s installation
-* **DATADOG_API_KEY**: API Key from [Datadog](https://app.datadoghq.com/organization-settings/api-keys)
-* **JPD_URL**: Artifactory JPD URL of the format `http://<ip_address>`
-* **JPD_ADMIN_USERNAME**: Artifactory username for authentication
-* **JFROG_ADMIN_TOKEN**: For security reasons, this value will be pulled from the secret jfrog-admin-token created in the step above
-* **COMMON_JPD**: This flag should be set as true only for non-Kubernetes installations or installations where the JPD base URL is the same to access both Artifactory and Xray (for example, `https://sample_base_url/artifactory` or `https://sample_base_url/xray`)
-
-Apply the `.env` files and run the helm command below:
-
-```shell
-source .env_jfrog
-```
-```shell
-helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
+1. For HA installation, please create a license secret on your cluster prior to installation.
+   ```shell
+   kubectl create secret generic artifactory-license --from-file=<path_to_license_file>artifactory.cluster.license 
+   ```
+2. Skip this step if you already have Artifactory installed. Else, install Artifactory using the command below
+    ```shell
+    helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
        --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
        --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
-       --set artifactory.openMetrics.enabled=true \
+       --set artifactory.license.secret=artifactory-license \
+       --set artifactory.license.dataKey=artifactory.cluster.license \
+       --set artifactory.metrics.enabled=true \
+       --set artifactory.openMetrics.enabled=true
+    ```
+3. Create a secret for JFrog's admin token - [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) using any of the following methods
+   ```shell
+   kubectl create secret generic jfrog-admin-token --from-file=token=<path_to_token_file>
+   
+   OR
+   
+   kubectl create secret generic jfrog-admin-token --from-literal=token=<JFROG_ADMN_TOKEN>
+   ```
+4. Download the .env file from [here](https://github.com/jfrog/log-analytics-datadog/raw/master/helm/jfrog_helm.env). Fill in the jfrog_helm.env file with correct values.
+
+   * **JF_PRODUCT_DATA_INTERNAL**: Helm based installs will already have this defined based upon the underlying Docker images. Not a required field for k8s installation
+   * **DATADOG_API_KEY**: API Key from [Datadog](https://app.datadoghq.com/organization-settings/api-keys)
+   * **JPD_URL**: Artifactory JPD URL of the format `http://<ip_address>`
+   * **JPD_ADMIN_USERNAME**: Artifactory username for authentication
+   * **COMMON_JPD**: This flag should be set as true only for non-Kubernetes installations or installations where the JPD base URL is the same to access both Artifactory and Xray (for example, `https://sample_base_url/artifactory` or `https://sample_base_url/xray`)
+
+   Apply the .env files and then run the helm command below
+
+   ````shell
+   source jfrog_helm.env
+   ````
+5. Postgres password is required to upgrade Artifactory. Run the following command to get the current password
+   ```shell
+   POSTGRES_PASSWORD=$(kubectl get secret artifactory-ha-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
+   ```
+6. Upgrade Artifactory HA installation using the command below
+   ```text
+   helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
+       --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
+       --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE --set artifactory.replicaCount=0 \
+       --set artifactory.metrics.enabled=true --set artifactory.openMetrics.enabled=true \
+       --set databaseUpgradeReady=true --set postgresql.postgresqlPassword=$POSTGRES_PASSWORD --set nginx.service.ssloffload=true \
        --set datadog.api_key=$DATADOG_API_KEY  \
        --set jfrog.observability.jpd_url=$JPD_URL \
        --set jfrog.observability.username=$JPD_ADMIN_USERNAME \
        --set jfrog.observability.common_jpd=$COMMON_JPD \
        -f helm/artifactory-ha-values.yaml
-```
+   ```
 
 #### Xray ⎈:
 
@@ -232,22 +268,21 @@ OR
 kubectl create secret generic jfrog-admin-token --from-literal=token=<JFROG_ADMN_TOKEN>
 ```
 
-For Xray installation, download the .env file [here](https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/.env_jfrog). Populate the .env_jfrog file with the correct values:
+For Xray installation, download the .env file from [here](https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/jfrog_helm.env). Fill in the jfrog_helm.env file with correct values.
 
 * **JF_PRODUCT_DATA_INTERNAL**: Helm based installs will already have this defined based upon the underlying Docker images. Not a required field for k8s installation
 * **DATADOG_API_KEY**: API Key from [Datadog](https://app.datadoghq.com/organization-settings/api-keys)
 * **JPD_URL**: Artifactory JPD URL of the format `http://<ip_address>`
 * **JPD_ADMIN_USERNAME**: Artifactory username for authentication
-* **JFROG_ADMIN_TOKEN**: For security reasons, this value will be pulled from the secret jfrog-admin-token created in the step above
 * **COMMON_JPD**: This flag should be set as true only for non-Kubernetes installations or installations where the JPD base URL is the same to access both Artifactory and Xray (for example, `https://sample_base_url/artifactory` or `https://sample_base_url/xray`)
 
-Apply the `.env` files and run the helm command below:
+Apply the .env files and then run the helm command below
 
-```shell
-source .env_jfrog
-```
+````shell
+source jfrog_helm.env
+````
 
-Use the same `joinKey` as you used in your Artifactory installation to allow the Xray node to successfully connect to Artifactory:
+Use the same `joinKey` as you used in Artifactory installation to allow Xray node to successfully connect to Artifactory.
 
 ```shell
 helm upgrade --install xray jfrog/xray --set xray.jfrogUrl=http://my-artifactory-nginx-url \
