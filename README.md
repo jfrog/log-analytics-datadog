@@ -181,9 +181,9 @@ Replace placeholders with your ``masterKey`` and ``joinKey``. To generate each o
 
    Apply the .env files using the helm command below
 
-   ````shell
+   ```shell
    source jfrog_helm.env
-   ````
+   ```
 4. Postgres password is required to upgrade Artifactory. Run the following command to get the current password
    ```shell
    POSTGRES_PASSWORD=$(kubectl get secret artifactory-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
@@ -236,9 +236,9 @@ Replace placeholders with your ``masterKey`` and ``joinKey``. To generate each o
 
    Apply the .env files and then run the helm command below
 
-   ````shell
+   ```shell
    source jfrog_helm.env
-   ````
+   ```
 5. Postgres password is required to upgrade Artifactory. Run the following command to get the current password
    ```shell
    POSTGRES_PASSWORD=$(kubectl get secret artifactory-ha-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
@@ -278,9 +278,9 @@ For Xray installation, download the .env file from [here](https://raw.githubuser
 
 Apply the .env files and then run the helm command below
 
-````shell
+```shell
 source jfrog_helm.env
-````
+```
 
 Use the same `joinKey` as you used in Artifactory installation to allow Xray node to successfully connect to Artifactory.
 
