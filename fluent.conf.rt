@@ -3,7 +3,6 @@
   @type jfrog_metrics
   @id metrics_http_jfrt
   tag jfrog.metrics.artifactory
-  interval 5s
   metric_prefix 'jfrog.artifactory'
   jpd_url "#{ENV['JPD_URL']}"
   username "#{ENV['JPD_ADMIN_USERNAME']}"
@@ -16,6 +15,7 @@
   target_platform "DATADOG"
   apikey "#{ENV['DATADOG_API_KEY']}"
   url "https://api.datadoghq.com/api/v2/series"
+  # ddtags ["instance:test-artifactory", "cluster:GKE"]
 </match>
 # ALL CALLHOME
 <source>
