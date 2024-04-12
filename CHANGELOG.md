@@ -2,7 +2,11 @@
 
 All changes to the log analytics integration will be documented in this file.
 
-## [1.0.1] - April 11, 2023
+## [1.0.2] - April 12, 2024
+
+* Fluentd version bumped to 4.2, which has latest Fluentd plugins. Resolved PTRENG-5895. 
+
+## [1.0.1] - April 11, 2024
 
 * Fix Artifactory access's regex to match log input changes
 

@@ -10,7 +10,7 @@ This integration is last tested with Artifactory 7.71.11 and Xray 3.88.12 versio
 
 `Note! You must follow the order of the steps throughout Datadog Configuration`
 1. [Datadog Setup](#datadog-setup)
-2. [JFrog Metrics Setup](#metrics-setup)
+2. [JFrog Metrics Setup](#jfrog-metrics-setup)
 3. [Fluentd Installation](#fluentd-installation)
    * [OS / Virtual Machine](#os--virtual-machine)
    * [Docker](#docker)
@@ -247,7 +247,7 @@ Replace placeholders with your ``masterKey`` and ``joinKey``. To generate each o
    ```text
    helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
        --set artifactory.masterKey=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF \
-       --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE --set artifactory.replicaCount=0 \
+       --set artifactory.joinKey=EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE \
        --set artifactory.metrics.enabled=true --set artifactory.openMetrics.enabled=true \
        --set databaseUpgradeReady=true --set postgresql.postgresqlPassword=$POSTGRES_PASSWORD --set nginx.service.ssloffload=true \
        --set datadog.api_key=$DATADOG_API_KEY  \
