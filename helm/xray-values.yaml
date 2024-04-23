@@ -42,8 +42,11 @@ common:
           value: {{ .Values.jfrog.observability.common_jpd | quote }}
         - name: DATADOG_API_KEY
           value: {{ .Values.datadog.api_key }}
+        - name: DATADOG_API_HOST
+          value: {{ .Values.datadog.api_host }}
 datadog:
   api_key: DATADOG_API_KEY
+  api_host: DATADOG_API_HOST
 jfrog:
   observability:
     jpd_url: JPD_URL
