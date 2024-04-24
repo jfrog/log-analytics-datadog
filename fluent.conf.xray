@@ -14,7 +14,7 @@
   @type jfrog_send_metrics
   target_platform "DATADOG"
   apikey "#{ENV['DATADOG_API_KEY']}"
-  url "https://api.datadoghq.com/api/v2/series"
+  url "https://api.#{ENV['DATADOG_API_HOST']}/api/v2/series"
   # ddtags ["instance:test-artifactory", "cluster:GKE"]
 </match>
 # ALL CALLHOME
@@ -322,7 +322,7 @@
     include_tag_key true
     dd_source jfrog_platform
     service jfrog_xray
-    host http-intake.logs.datadoghq.com
+    host "http-intake.logs.#{ENV['DATADOG_API_HOST']}"
     <buffer>
       flush_interval 1s
       # frequency of the buffer flush
