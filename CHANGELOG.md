@@ -2,9 +2,10 @@
 
 All changes to the log analytics integration will be documented in this file.
 
-## [1.0.3] - April 22, 2024
+## [1.0.3] - April 23, 2024
 
 * Fix order of request and response content length to match spec
+* Add a new environment variable to support DataDog host configuration in Fluentd for log and metrics endpoints
 
 ## [1.0.2] - April 12, 2024
 
