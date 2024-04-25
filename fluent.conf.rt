@@ -311,8 +311,8 @@
     @type record_transformer
     enable_ruby true
     <record>
-      repo ${record["request_url"].include?("/api/docker") && !record["request_url"].include?("/api/docker/null") && !record["request_url"].include?("/api/docker/v2") ? (record["request_url"].split('/')[3]) : ("")}
-      image ${record["request_url"].include?("/api/docker") && !record["request_url"].include?("/api/docker/null") && !record["request_url"].include?("/api/docker/v2")  ? (record["request_url"].split('/')[5]) : ("")}
+      repo ${record["request_url"].strip().include?("/api/docker") && !record["request_url"].include?("/api/docker/null") && !record["request_url"].include?("/api/docker/v2") && !record["request_url"].include?("v2/token") ? (record["request_url"].strip())[/api\/docker\/(.+)\/(?:v2)/, 1] : ("")}
+      image ${record["request_url"].strip().include?("/api/docker") && !record["request_url"].include?("/api/docker/null") && !record["request_url"].include?("/api/docker/v2") && !record["request_url"].include?("v2/token") ? (record["request_url"].strip())[/v2\/(.+)\/(?:manifests|blobs)/, 1] : ("")}
     </record>
   </filter>
   <filter jfrog.rt.artifactory.request>
