@@ -136,7 +136,7 @@
   include_tag_key true
   dd_source jfrog_platform
   service jfrog_xray
-  host http-intake.logs.datadoghq.com
+  host "http-intake.logs.#{ENV['DATADOG_API_HOST']}"
   <buffer>
     flush_interval 1s
     # frequency of the buffer flush

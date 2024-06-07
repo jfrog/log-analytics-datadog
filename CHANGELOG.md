@@ -2,6 +2,12 @@
 
 All changes to the log analytics integration will be documented in this file.
 
+## [1.0.4] - June 6, 2024
+* [BREAKING] Adding deprecation notice for partnership-pts-observability.jfrog.io docker registry
+* FluentD sidecar version bumped to 4.3, to upgrade base image to bitnami/fluentd 1.16.5
+* Minor bug fix to FluentD config - fixing dynamic DataDog host config for logs
+* Update FluentD sidecar helm charts to match recent changes in JFrog's official charts
+
 ## [1.0.3] - April 23, 2024
 
 * Fix order of request and response content length to match spec
@@ -9,7 +15,7 @@ All changes to the log analytics integration will be documented in this file.
 
 ## [1.0.2] - April 12, 2024
 
-* Fluentd version bumped to 4.2, which has latest Fluentd plugins. Resolved PTRENG-5895.
+* Fluentd version bumped to 4.2, which has latest Fluentd plugins. Resolved PTRENG-5895
 
 ## [1.0.1] - April 11, 2024
 
@@ -24,7 +30,7 @@ All changes to the log analytics integration will be documented in this file.
 
 ## [0.8.0] - Feb 09, 2022
 
-* Added call home functionality to artifactory fluent configuration.
+* Added call home functionality to artifactory fluent configuration
 
 ## [0.7.0] - Oct 20, 2020
 
@@ -32,7 +38,7 @@ All changes to the log analytics integration will be documented in this file.
 
 ## [0.6.0] - Sept 25, 2020
 
-* [BREAKING] Datadog fluentd configs updated to use JF_PRODUCT_DATA_INTERNAL env.
+* [BREAKING] Datadog fluentd configs updated to use JF_PRODUCT_DATA_INTERNAL env
 
 ## [0.5.0] - Sept 8, 2020
 
