@@ -4,7 +4,7 @@ The following document describes how to configure Datadog to gather logs, metric
 
 ## Versions Supported
 
-This integration is last tested with Artifactory 7.84.11 and Xray 3.92.7 versions.
+This integration is last tested with Artifactory 7.84.17 and Xray 3.92.7 versions.
 
 ## Table of Contents
 
@@ -31,13 +31,17 @@ If you don't have a DataDog apiKey:
 
 ## JFrog Metrics Setup
 
-Metrics collection is diabled by default in Artifactory by default. To enable metrics in Artifactory, make the following configuration changes to the [Artifactory System YAML](https://www.jfrog.com/confluence/display/JFROG/Artifactory+System+YAML).
+Metrics collection is disabled by default in Artifactory by default. For non-kubernetes installations, to enable metrics in Artifactory, make the following configuration changes to the [Artifactory System YAML](https://www.jfrog.com/confluence/display/JFROG/Artifactory+System+YAML):
+
+```yaml
+shared:
+    metrics:
+        enabled: true
 
 artifactory:
-metrics:
-enabled: true
-openMetrics:
-enabled: true
+    metrics:
+        enabled: true
+```
 Once this configuration is done and the application is restarted, metrics will be available in Open Metrics Format
 
 :bulb: Metrics are enabled by default in Xray.
@@ -67,7 +71,7 @@ For a Gem-based install, the Ruby Interpreter must be setup first. You can insta
 
    * Use the `SUDO` command  for multi-user installation. For more information, see the [RVM troubleshooting documentation](https://rvm.io/support/troubleshooting#sudo).
 2. After the RVM installation is complete, execute the command 'rvm -v' to verify.
-3. Install Ruby v2.7.0 or above with the command `rvm install <ver_num>`, (for example, `rvm install 2.7.5`).
+3. Install Ruby v3.3.0 or above with the command `rvm install <ver_num>`, (for example, `rvm install 3.3.0`).
 4. Verify the Ruby installation, execute `ruby -v`, gem installation `gem -v` and `bundler -v` to ensure all the components are intact.
 5. Install the FluentD gem with the command `gem install fluentd`.
 6. After FluentD is successfully installed, install the following plugins.
@@ -180,12 +184,11 @@ export MASTER_KEY=$(openssl rand -hex 32)
           --set artifactory.joinKey=$JOIN_KEY \
           --set artifactory.license.secret=artifactory-license \
           --set artifactory.license.dataKey=artifactory.cluster.license \
-          --set artifactory.metrics.enabled=true \
           --set artifactory.openMetrics.enabled=true \
           -n $INST_NAMESPACE --create-namespace
    ```
 
-   :bulb: Metrics collection is disabled by default in Artifactory. Please make sure that you are following the above `helm upgrade` command to enable them in Artifactory by setting to true both `artifactory.metrics.enabled` and `artifactory.openMetrics.enabled`
+   :bulb: Metrics collection is disabled by default in Artifactory. Please make sure that you are following the above `helm upgrade` command to enable them in Artifactory by setting `artifactory.openMetrics.enabled=true` as shown above
 
    Get the ip address of the newly deployed Artifactory:
 
@@ -228,9 +231,8 @@ export MASTER_KEY=$(openssl rand -hex 32)
 
    ```bash
    helm upgrade --install artifactory jfrog/artifactory \
-            --set artifactory.masterKey=$MASTER_KEY \
             --set artifactory.joinKey=$JOIN_KEY \
-            --set artifactory.metrics.enabled=true --set artifactory.openMetrics.enabled=true \
+            --set artifactory.openMetrics.enabled=true \
             --set databaseUpgradeReady=true --set postgresql.postgresqlPassword=$POSTGRES_PASSWORD --set nginx.service.ssloffload=true \
             --set datadog.api_key=$DATADOG_API_KEY \
             --set datadog.api_host=$DATADOG_API_HOST \
@@ -256,12 +258,11 @@ export MASTER_KEY=$(openssl rand -hex 32)
       --set artifactory.joinKey=$JOIN_KEY \
       --set artifactory.license.secret=artifactory-license \
       --set artifactory.license.dataKey=artifactory.cluster.license \
-      --set artifactory.metrics.enabled=true \
       --set artifactory.openMetrics.enabled=true \
       -n $INST_NAMESPACE
    ```
 
-   :bulb: Metrics collection is disabled by default in Artifactory-HA. Please make sure that you are following the above `helm upgrade` command to enable them in Artifactory-HA by setting to true both `artifactory.metrics.enabled` and `artifactory.openMetrics.enabled`
+   :bulb: Metrics collection is disabled by default in Artifactory-HA. Please make sure that you are following the above `helm upgrade` command to enable them in Artifactory by setting `artifactory.openMetrics.enabled=true` as shown above
 
    Get the ip address of the newly deployed Artifactory:
 
@@ -301,9 +302,8 @@ export MASTER_KEY=$(openssl rand -hex 32)
 
    ```bash
    helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
-       --set artifactory.masterKey=$MASTER_KEY \
        --set artifactory.joinKey=$JOIN_KEY \
-       --set artifactory.metrics.enabled=true --set artifactory.openMetrics.enabled=true \
+       --set artifactory.openMetrics.enabled=true \
        --set databaseUpgradeReady=true --set postgresql.postgresqlPassword=$POSTGRES_PASSWORD --set nginx.service.ssloffload=true \
        --set datadog.api_key=$DATADOG_API_KEY \
        --set datadog.api_host=$DATADOG_API_HOST \
@@ -349,7 +349,7 @@ export XRAY_MASTER_KEY=$(openssl rand -hex 32)
 Use the same `joinKey` as you used in Artifactory installation to allow Xray node to successfully connect to Artifactory.
 
 ```bash
-helm upgrade --install xray jfrog/xray --set xray.jfrogUrl=http://my-artifactory-nginx-url \
+helm upgrade --install xray jfrog/xray --set xray.jfrogUrl=$JPD_URL \
        --set xray.masterKey=$XRAY_MASTER_KEY \
        --set xray.joinKey=$JOIN_KEY \
        --set datadog.api_key=$DATADOG_API_KEY \
