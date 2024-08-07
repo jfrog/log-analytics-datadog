@@ -42,6 +42,7 @@ artifactory:
     metrics:
         enabled: true
 ```
+
 Once this configuration is done and the application is restarted, metrics will be available in Open Metrics Format
 
 :bulb: Metrics are enabled by default in Xray.
@@ -184,19 +185,16 @@ export MASTER_KEY=$(openssl rand -hex 32)
           --set artifactory.joinKey=$JOIN_KEY \
           --set artifactory.license.secret=artifactory-license \
           --set artifactory.license.dataKey=artifactory.cluster.license \
-          --set artifactory.openMetrics.enabled=true \
+          --set artifactory.metrics.enabled=true \
           -n $INST_NAMESPACE --create-namespace
    ```
 
-   :bulb: Metrics collection is disabled by default in Artifactory. Please make sure that you are following the above `helm upgrade` command to enable them in Artifactory by setting `artifactory.openMetrics.enabled=true` as shown above
+   :bulb: Metrics collection is disabled by default in Artifactory-HA. Please make sure that you are following the above `helm upgrade` command to enable them in Artifactory by setting `artifactory.metrics.enabled=true`. For Artifactory versions <=7.86.x please use the flag artifactory.openMetrics.enabled=trueGet the ip address of the newly deployed Artifactory:
 
-   Get the ip address of the newly deployed Artifactory:
-
-      ```bash
-      export SERVICE_IP=$(kubectl get svc -n $INST_NAMESPACE artifactory-artifactory-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')   
-      echo $SERVICE_IP
-      ```
-
+   ```bash
+   export SERVICE_IP=$(kubectl get svc -n $INST_NAMESPACE artifactory-artifactory-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')   
+   echo $SERVICE_IP
+   ```
 2. Create a secret for JFrog's admin token - [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) using any of the following methods
 
    ```bash
@@ -206,7 +204,6 @@ export MASTER_KEY=$(openssl rand -hex 32)
 
    kubectl create secret generic jfrog-admin-token --from-literal=token=<JFROG_ADMN_TOKEN>
    ```
-
 3. For Artifactory installation, download the .env file from [here](https://github.com/jfrog/log-analytics-datadog/raw/master/helm/jfrog_helm.env). Fill in the jfrog_helm.env file with correct values.
 
    * **JF_PRODUCT_DATA_INTERNAL**: Helm based installs will already have this defined based upon the underlying Docker images. Not a required field for k8s installation
@@ -220,8 +217,7 @@ export MASTER_KEY=$(openssl rand -hex 32)
 
    ```bash
    source jfrog_helm.env
-      ```
-
+   ```
 4. Postgres password is required to upgrade Artifactory. Run the following command to get the current password
 
    ```bash
@@ -232,7 +228,6 @@ export MASTER_KEY=$(openssl rand -hex 32)
    ```bash
    helm upgrade --install artifactory jfrog/artifactory \
             --set artifactory.joinKey=$JOIN_KEY \
-            --set artifactory.openMetrics.enabled=true \
             --set databaseUpgradeReady=true --set postgresql.postgresqlPassword=$POSTGRES_PASSWORD --set nginx.service.ssloffload=true \
             --set datadog.api_key=$DATADOG_API_KEY \
             --set datadog.api_host=$DATADOG_API_HOST \
@@ -258,11 +253,11 @@ export MASTER_KEY=$(openssl rand -hex 32)
       --set artifactory.joinKey=$JOIN_KEY \
       --set artifactory.license.secret=artifactory-license \
       --set artifactory.license.dataKey=artifactory.cluster.license \
-      --set artifactory.openMetrics.enabled=true \
+      --set artifactory.metrics.enabled=true \
       -n $INST_NAMESPACE
    ```
 
-   :bulb: Metrics collection is disabled by default in Artifactory-HA. Please make sure that you are following the above `helm upgrade` command to enable them in Artifactory by setting `artifactory.openMetrics.enabled=true` as shown above
+   :bulb: Metrics collection is disabled by default in Artifactory-HA. Please make sure that you are following the above `helm upgrade` command to enable them in Artifactory by setting `artifactory.metrics.enabled=true`. For Artifactory versions <=7.86.x please use the flag artifactory.openMetrics.enabled=true
 
    Get the ip address of the newly deployed Artifactory:
 
