@@ -189,7 +189,9 @@ export MASTER_KEY=$(openssl rand -hex 32)
           -n $INST_NAMESPACE --create-namespace
    ```
 
-   :bulb: Metrics collection is disabled by default in Artifactory-HA. Please make sure that you are following the above `helm upgrade` command to enable them in Artifactory by setting `artifactory.metrics.enabled=true`. For Artifactory versions <=7.86.x please use the flag artifactory.openMetrics.enabled=trueGet the ip address of the newly deployed Artifactory:
+   :bulb: Metrics collection is disabled by default in Artifactory. Please make sure that you are following the above `helm upgrade` command to enable them in Artifactory by setting `artifactory.metrics.enabled=true`. For Artifactory versions <=7.86.x, please enable metrics by setting the flag `artifactory.openMetrics.enabled=true`
+
+   Get the ip address of the newly deployed Artifactory:
 
    ```bash
    export SERVICE_IP=$(kubectl get svc -n $INST_NAMESPACE artifactory-artifactory-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')   
@@ -257,7 +259,7 @@ export MASTER_KEY=$(openssl rand -hex 32)
       -n $INST_NAMESPACE
    ```
 
-   :bulb: Metrics collection is disabled by default in Artifactory-HA. Please make sure that you are following the above `helm upgrade` command to enable them in Artifactory by setting `artifactory.metrics.enabled=true`. For Artifactory versions <=7.86.x please use the flag artifactory.openMetrics.enabled=true
+   :bulb: Metrics collection is disabled by default in Artifactory-HA. Please make sure that you are following the above `helm upgrade` command to enable them in Artifactory by setting `artifactory.metrics.enabled=true`. For Artifactory versions <=7.86.x, please enable metrics by setting the flag `artifactory.openMetrics.enabled=true`
 
    Get the ip address of the newly deployed Artifactory:
 
