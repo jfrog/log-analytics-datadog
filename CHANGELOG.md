@@ -2,6 +2,10 @@
 
 All changes to the log analytics integration will be documented in this file.
 
+## [1.0.7] - August 19, 2024
+
+* FluentD sidecar image version bumped to 4.7, to add http proxy support for JFrog's FluentD metrics plugin
+
 ## [1.0.6] - August 7, 2024
 
 * Fix metrics configuration due to deprication of `artifactory.openMetrics` as part of Artifactory 7.87.x charts and renaming it to `artifactory.metrics`
