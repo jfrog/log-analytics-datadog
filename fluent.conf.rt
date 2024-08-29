@@ -17,6 +17,15 @@
   url "https://api.#{ENV['DATADOG_API_HOST']}/api/v2/series"
   ddtags ["instance:test-artifactory", "cluster:GKE"]
 </match>
+## ALL METRICS
+<filter jfrog.metrics.**>
+  @type record_transformer
+  <record>
+    hostname "#{ENV['HOSTNAME']}"
+    log_source Artifactory
+    instance "#{ENV['HOSTNAME']}"
+  </record>
+</filter>
 # ALL CALLHOME
 <source>
   @type exec
