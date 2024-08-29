@@ -15,7 +15,7 @@
   target_platform "DATADOG"
   apikey "#{ENV['DATADOG_API_KEY']}"
   url "https://api.#{ENV['DATADOG_API_HOST']}/api/v2/series"
-  # ddtags ["instance:test-artifactory", "cluster:GKE"]
+  ddtags ["instance:test-artifactory", "cluster:GKE"]
 </match>
 # ALL CALLHOME
 <source>
