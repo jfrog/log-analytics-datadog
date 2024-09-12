@@ -2,6 +2,10 @@
 
 All changes to the log analytics integration will be documented in this file.
 
+## [1.0.8] - September 12, 2024
+
+* FluentD sidecar image version bumped to 4.8, to add verify_ssl flag support for JFrog's FluentD metrics plugins
+
 ## [1.0.7] - August 19, 2024
 
 * FluentD sidecar image version bumped to 4.7, to add http proxy support for JFrog's FluentD metrics plugin
