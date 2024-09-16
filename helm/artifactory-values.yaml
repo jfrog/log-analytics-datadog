@@ -43,8 +43,6 @@ artifactory:
           value: {{ .Values.datadog.api_host }}
         - name: FLUENTD_CONF
           value: ../../../..{{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf
-        - name: VERIFY_SSL
-          value: true
 datadog:
   api_key: DATADOG_API_KEY
   api_host: DATADOG_API_HOST
