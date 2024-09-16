@@ -15,7 +15,7 @@
   target_platform "DATADOG"
   apikey "#{ENV['DATADOG_API_KEY']}"
   url "https://api.#{ENV['DATADOG_API_HOST']}/api/v2/series"
-  # ddtags ["instance:test-artifactory", "cluster:GKE"]
+  ddtags ["instance:#{ENV['DATADOG_API_HOST']}", "jpd_admin:#{ENV['JPD_ADMIN_USERNAME']}"]
 </match>
 # ALL CALLHOME
 <source>

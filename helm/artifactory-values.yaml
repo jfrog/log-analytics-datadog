@@ -33,7 +33,7 @@ artifactory:
         - name: JFROG_ADMIN_TOKEN
           valueFrom:
             secretKeyRef:
-              name: jfrog-admin-token
+              name: jfrog-admin-token-test
               key: token
         - name: COMMON_JPD
           value: {{ .Values.jfrog.observability.common_jpd | quote }}
