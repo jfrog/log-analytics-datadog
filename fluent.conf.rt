@@ -9,13 +9,14 @@
   token "#{ENV['JFROG_ADMIN_TOKEN']}"
   common_jpd "#{ENV['COMMON_JPD']}"
   target_platform "DATADOG"
+  verify_ssl "#{ENV['VERIFY_SSL']}"
 </source>
 <match jfrog.metrics.**>
   @type jfrog_send_metrics
   target_platform "DATADOG"
   apikey "#{ENV['DATADOG_API_KEY']}"
   url "https://api.#{ENV['DATADOG_API_HOST']}/api/v2/series"
-  ddtags ["instance:#{ENV['DATADOG_API_HOST']}", "jpd_admin:#{ENV['JPD_ADMIN_USERNAME']}"]
+  ddtags ["instance:ENV['DATADOG_API_HOST']", "jpd_admin:ENV['JPD_ADMIN_USERNAME']"]
 </match>
 # ALL CALLHOME
 <source>
