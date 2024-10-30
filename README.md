@@ -92,6 +92,8 @@ We rely on environment variables to stream log files to your observability dashb
 * **JF_PRODUCT_DATA_INTERNAL**: The environment variable JF_PRODUCT_DATA_INTERNAL must be defined to the correct location. For each JFrog service, you can find its active log files in the `$JFROG_HOME/<product>/var/log` directory
 * **DATADOG_API_KEY**: API Key from [Datadog](https://app.datadoghq.com/organization-settings/api-keys)
 * **DATADOG_API_HOST**: Your DataDog host based on your [DataDog Site Parameter from this list](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site)
+* **DATADOG_VERIFY_SSL**: false for disabling ssl validation (useful for proxy forwarding or bypassing ssl certificate validation)
+* **DATADOG_COMPRESS_DATA**: true for compressing logs and metrics json payloads on outbound to DataDog
 * **JPD_URL**: Artifactory JPD URL with the format `http://<ip_address>`
 * **JPD_ADMIN_USERNAME**: Artifactory username for authentication
 * **JFROG_ADMIN_TOKEN**: Artifactory [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) for authentication
@@ -121,6 +123,8 @@ In order to run FluentD as a docker image to send the logs, violations, and metr
    * **JF_PRODUCT_DATA_INTERNAL**: The environment variable JF_PRODUCT_DATA_INTERNAL must be defined to the correct location. For each JFrog service you will find its active log files in the `$JFROG_HOME/<product>/var/log` directory
    * **DATADOG_API_KEY**: API Key from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/)
    * **DATADOG_API_HOST**: Your DataDog host based on your [DataDog Site Parameter from this list](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site)
+   * **DATADOG_VERIFY_SSL**: false for disabling ssl validation (useful for proxy forwarding or bypassing ssl certificate validation)
+   * **DATADOG_COMPRESS_DATA**: true for compressing logs and metrics json payloads on outbound to DataDog
    * **JPD_URL**: Artifactory JPD URL of the format `http://<ip_address>`
    * **JPD_ADMIN_USERNAME**: Artifactory username for authentication
    * **JFROG_ADMIN_TOKEN**: Artifactory [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) for authentication
@@ -211,6 +215,8 @@ export MASTER_KEY=$(openssl rand -hex 32)
    * **JF_PRODUCT_DATA_INTERNAL**: Helm based installs will already have this defined based upon the underlying Docker images. Not a required field for k8s installation
    * **DATADOG_API_KEY**: API Key from [Datadog](https://app.datadoghq.com/organization-settings/api-keys)
    * **DATADOG_API_HOST**: Your DataDog host based on your [DataDog Site Parameter from this list](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site)
+   * **DATADOG_VERIFY_SSL**: false for disabling ssl validation (useful for proxy forwarding or bypassing ssl certificate validation)
+   * **DATADOG_COMPRESS_DATA**: true for compressing logs and metrics json payloads on outbound to DataDog 
    * **JPD_URL**: Artifactory JPD URL of the format `http://<ip_address>`
    * **JPD_ADMIN_USERNAME**: Artifactory username for authentication
    * **COMMON_JPD**: This flag should be set as true only for non-Kubernetes installations or installations where the JPD base URL is the same to access both Artifactory and Xray (for example, `https://sample_base_url/artifactory` or `https://sample_base_url/xray`)
@@ -233,6 +239,8 @@ export MASTER_KEY=$(openssl rand -hex 32)
             --set databaseUpgradeReady=true --set postgresql.postgresqlPassword=$POSTGRES_PASSWORD --set nginx.service.ssloffload=true \
             --set datadog.api_key=$DATADOG_API_KEY \
             --set datadog.api_host=$DATADOG_API_HOST \
+            --set datadog.compress_data=$DATADOG_COMPRESS_DATA \
+            --set datadog.verify_ssl=$DATADOG_VERIFY_SSL \
             --set jfrog.observability.jpd_url=$JPD_URL \
             --set jfrog.observability.username=$JPD_ADMIN_USERNAME \
             --set jfrog.observability.common_jpd=$COMMON_JPD \
@@ -281,6 +289,8 @@ export MASTER_KEY=$(openssl rand -hex 32)
    * **JF_PRODUCT_DATA_INTERNAL**: Helm based installs will already have this defined based upon the underlying Docker images. Not a required field for k8s installation
    * **DATADOG_API_KEY**: API Key from [Datadog](https://app.datadoghq.com/organization-settings/api-keys)
    * **DATADOG_API_HOST**: Your DataDog host based on your [DataDog Site Parameter from this list](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site)
+   * **DATADOG_VERIFY_SSL**: false for disabling ssl validation (useful for proxy forwarding or bypassing ssl certificate validation)
+   * **DATADOG_COMPRESS_DATA**: true for compressing logs and metrics json payloads on outbound to DataDog
    * **JPD_URL**: Artifactory JPD URL of the format `http://<ip_address>`
    * **JPD_ADMIN_USERNAME**: Artifactory username for authentication
    * **COMMON_JPD**: This flag should be set as true only for non-Kubernetes installations or installations where the JPD base URL is the same to access both Artifactory and Xray (for example, `https://sample_base_url/artifactory` or `https://sample_base_url/xray`)
@@ -304,6 +314,8 @@ export MASTER_KEY=$(openssl rand -hex 32)
        --set databaseUpgradeReady=true --set postgresql.postgresqlPassword=$POSTGRES_PASSWORD --set nginx.service.ssloffload=true \
        --set datadog.api_key=$DATADOG_API_KEY \
        --set datadog.api_host=$DATADOG_API_HOST \
+       --set datadog.compress_data=$DATADOG_COMPRESS_DATA \
+       --set datadog.verify_ssl=$DATADOG_VERIFY_SSL \
        --set jfrog.observability.jpd_url=$JPD_URL \
        --set jfrog.observability.username=$JPD_ADMIN_USERNAME \
        --set jfrog.observability.common_jpd=$COMMON_JPD \
@@ -327,6 +339,8 @@ For Xray installation, download the .env file from [here](https://raw.githubuser
 
 * **JF_PRODUCT_DATA_INTERNAL**: Helm based installs will already have this defined based upon the underlying Docker images. Not a required field for k8s installation
 * **DATADOG_API_KEY**: API Key from [Datadog](https://app.datadoghq.com/organization-settings/api-keys)
+* **DATADOG_VERIFY_SSL**: false for disabling ssl validation (useful for proxy forwarding or bypassing ssl certificate validation)
+* **DATADOG_COMPRESS_DATA**: true for compressing logs and metrics json payloads on outbound to DataDog
 * **JPD_URL**: Artifactory JPD URL of the format `http://<ip_address>`
 * **JPD_ADMIN_USERNAME**: Artifactory username for authentication
 * **COMMON_JPD**: This flag should be set as true only for non-Kubernetes installations or installations where the JPD base URL is the same to access both Artifactory and Xray (for example, `https://sample_base_url/artifactory` or `https://sample_base_url/xray`)
@@ -351,6 +365,8 @@ helm upgrade --install xray jfrog/xray --set xray.jfrogUrl=$JPD_URL \
        --set xray.joinKey=$JOIN_KEY \
        --set datadog.api_key=$DATADOG_API_KEY \
        --set datadog.api_host=$DATADOG_API_HOST \
+       --set datadog.compress_data=$DATADOG_COMPRESS_DATA \
+       --set datadog.verify_ssl=$DATADOG_VERIFY_SSL \
        --set jfrog.observability.jpd_url=$JPD_URL \
        --set jfrog.observability.username=$JPD_ADMIN_USERNAME \
        --set jfrog.observability.common_jpd=$COMMON_JPD \

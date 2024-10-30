@@ -2,6 +2,13 @@
 
 All changes to the log analytics integration will be documented in this file.
 
+## [1.0.9] - October 25, 2024
+
+* Add support for metrics outbound payload compression, with `gzip_compression` FluentD param in `jfrog_send_metrics` plugin
+* Add support for a configurable http request timeout, with `request_timeout` FluentD param in `jfrog_metrics` and `jfrog_send_metrics` plugins
+* FluentD sidecar version bumped to 4.9, to incorporate the above changes
+* Add configuration support via environment variable for `verify_ssl` FluentD flag
+
 ## [1.0.8] - September 12, 2024
 
 * FluentD sidecar image version bumped to 4.8, to add verify_ssl flag support for JFrog's FluentD metrics plugins
