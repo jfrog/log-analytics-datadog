@@ -2,6 +2,10 @@
 
 All changes to the log analytics integration will be documented in this file.
 
+## [1.0.10] - November 7, 2024
+
+* FluentD sidecar image version bumped to 4.13, to reflect changes in `jfrog_siem` and `jfrog_send_metrics` FluentD plugins 
+
 ## [1.0.9] - October 25, 2024
 
 * Add support for metrics outbound payload compression, with `gzip_compression` FluentD param in `jfrog_send_metrics` plugin
