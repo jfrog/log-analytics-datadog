@@ -187,8 +187,6 @@ export MASTER_KEY=$(openssl rand -hex 32)
    helm upgrade --install artifactory jfrog/artifactory \
           --set artifactory.masterKey=$MASTER_KEY \
           --set artifactory.joinKey=$JOIN_KEY \
-          --set artifactory.license.secret=artifactory-license \
-          --set artifactory.license.dataKey=artifactory.cluster.license \
           --set artifactory.metrics.enabled=true \
           -n $INST_NAMESPACE --create-namespace
    ```
@@ -310,7 +308,7 @@ export MASTER_KEY=$(openssl rand -hex 32)
    ```bash
    helm upgrade --install artifactory-ha  jfrog/artifactory-ha \
        --set artifactory.joinKey=$JOIN_KEY \
-       --set artifactory.openMetrics.enabled=true \
+       --set artifactory.metrics.enabled=true \
        --set databaseUpgradeReady=true --set postgresql.postgresqlPassword=$POSTGRES_PASSWORD --set nginx.service.ssloffload=true \
        --set datadog.api_key=$DATADOG_API_KEY \
        --set datadog.api_host=$DATADOG_API_HOST \
