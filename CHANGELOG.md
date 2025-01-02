@@ -2,6 +2,10 @@
 
 All changes to the log analytics integration will be documented in this file.
 
+## [1.0.12] - January 2, 2025
+
+* FluentD sidecar image version bumped to 4.15, to upgrade base image to bitnami/fluentd 1.18.0
+
 ## [1.0.11] - November 19, 2024
 
 * FluentD sidecar image version bumped to 4.14, to reflect logging improvements in `jfrog_metrics` and `jfrog_send_metrics` FluentD plugins 
