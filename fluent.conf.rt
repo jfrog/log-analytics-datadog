@@ -12,7 +12,7 @@
   execution_interval 60s
   request_timeout 30s
   # @log_level debug
-  # verify_ssl "#{ENV['DATADOG_VERIFY_SSL']}"
+  verify_ssl "#{ENV['DATADOG_VERIFY_SSL']}"
 </source>
 <match jfrog.metrics.**>
   @type jfrog_send_metrics
@@ -22,8 +22,8 @@
   gzip_compression "#{ENV['DATADOG_COMPRESS_DATA']}"
   request_timeout 30s
   # @log_level debug
-  # verify_ssl "#{ENV['DATADOG_VERIFY_SSL']}"
-  # ddtags ["instance:test-artifactory", "cluster:GKE"]
+  verify_ssl "#{ENV['DATADOG_VERIFY_SSL']}"
+  ddtags ["instance:test-artifactory", "cluster:GKE"]
 </match>
 # CALLHOME
 <source>
