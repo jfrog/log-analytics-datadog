@@ -4,7 +4,7 @@ The following document describes how to configure Datadog to gather logs, metric
 
 ## Versions Supported
 
-This integration is last tested with Artifactory 7.84.17 and Xray 3.92.7 versions.
+This integration is last tested with Artifactory 7.104.7 and Xray 3.92.7 versions.
 
 ## Table of Contents
 
@@ -89,7 +89,7 @@ gem install fluent-plugin-jfrog-send-metrics
 
 We rely on environment variables to stream log files to your observability dashboards. Ensure that you fill in the `.env` file with the correct values. You can download the `.env` file [here](https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/jfrog.env).
 
-* **JF_PRODUCT_DATA_INTERNAL**: The environment variable JF_PRODUCT_DATA_INTERNAL must be defined to the correct location. For each JFrog service, you can find its active log files in the `$JFROG_HOME/<product>/var/log` directory
+* **JF_PRODUCT_DATA_INTERNAL**: This environment variable must be set to the folder that contains the `log` folder. For each JFrog service, you can find its active log files in the `$JFROG_HOME/<product>/var/log`. This environment variable should point to the folder that contains the `log` directory. For example, for `artifactory` set this variable to `$JFROG_HOME/artifactory/var`
 * **DATADOG_API_KEY**: API Key from [Datadog](https://app.datadoghq.com/organization-settings/api-keys)
 * **DATADOG_API_HOST**: Your DataDog host based on your [DataDog Site Parameter from this list](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site)
 * **DATADOG_VERIFY_SSL**: false for disabling ssl validation (useful for proxy forwarding or bypassing ssl certificate validation)
@@ -120,7 +120,7 @@ In order to run FluentD as a docker image to send the logs, violations, and metr
    ```
 5. Fill out the necessary information in the docker.env file:
 
-   * **JF_PRODUCT_DATA_INTERNAL**: The environment variable JF_PRODUCT_DATA_INTERNAL must be defined to the correct location. For each JFrog service you will find its active log files in the `$JFROG_HOME/<product>/var/log` directory
+   * **JF_PRODUCT_DATA_INTERNAL**: This environment variable must be set to the folder that contains the `log` folder. For each JFrog service, you can find its active log files in the `$JFROG_HOME/<product>/var/log`. This environment variable should point to the folder that contains the `log` directory. For example, for `artifactory` set this variable to `$JFROG_HOME/artifactory/var`
    * **DATADOG_API_KEY**: API Key from [Datadog](https://docs.datadoghq.com/account_management/api-app-keys/)
    * **DATADOG_API_HOST**: Your DataDog host based on your [DataDog Site Parameter from this list](https://docs.datadoghq.com/getting_started/site/#access-the-datadog-site)
    * **DATADOG_VERIFY_SSL**: false for disabling ssl validation (useful for proxy forwarding or bypassing ssl certificate validation)
@@ -129,7 +129,7 @@ In order to run FluentD as a docker image to send the logs, violations, and metr
    * **JPD_ADMIN_USERNAME**: Artifactory username for authentication
    * **JFROG_ADMIN_TOKEN**: Artifactory [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) for authentication
    * **COMMON_JPD**: This flag should be set as true only for non-kubernetes installations or installations where JPD base URL is same to access both Artifactory and Xray (ex: https://sample_base_url/artifactory or https://sample_base_url/xray)
-6. Execute 'docker run -it --name jfrog-fluentd-datadog-rt -v <path_to_logs>:/var/opt/jfrog/artifactory --env-file docker.env <image_name>'
+6. Execute 'docker run -it --name jfrog-fluentd-datadog-rt -v <path_to_folder_contains_log_dir>:/var/opt/jfrog/artifactory --env-file docker.env <image_name>'
 
    The `<path_to_logs>` should be an absolute path where the Jfrog Artifactory Logs folder resides, such as a Docker based Artifactory Installation like`/var/opt/jfrog/artifactory/var/logs` on the docker host. For example:
 
