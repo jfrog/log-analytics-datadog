@@ -3,6 +3,9 @@
   path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/artifactory-request.log"
   pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/artifactory-request.log.pos"
   tag jfrog.rt.artifactory.request
+  <parse>
+    @type none
+  </parse>
 </source>
 
 <match jfrog.rt.artifactory.request>
