@@ -48,6 +48,8 @@ common:
           value: {{ .Values.datadog.verify_ssl | quote}}
         - name: DATADOG_COMPRESS_DATA
           value: {{ .Values.datadog.compress_data | quote }}
+        - name: LOG_ENV
+          value: {{ .Values.jfrog.observability.log_env | default "staging" | quote }}
 datadog:
   api_key: DATADOG_API_KEY
   api_host: DATADOG_API_HOST
@@ -58,3 +60,4 @@ jfrog:
     jpd_url: JPD_URL
     username: JPD_ADMIN_USERNAME
     common_jpd: COMMON_JPD
+    log_env: LOG_ENV

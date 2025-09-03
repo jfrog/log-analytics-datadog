@@ -98,6 +98,7 @@ We rely on environment variables to stream log files to your observability dashb
 * **JPD_ADMIN_USERNAME**: Artifactory username for authentication
 * **JFROG_ADMIN_TOKEN**: Artifactory [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) for authentication
 * **COMMON_JPD**: This flag should be set as true only for non-Kubernetes installations or installations where the JPD base URL is the same to access both Artifactory and Xray (for example, `https://sample_base_url/artifactory` or `https://sample_base_url/xray`)
+* **LOG_ENV**: Optional environment tag for categorizing logs and metrics (e.g., `staging`, `production`, `dev`). This tag will be added to all logs and metrics sent to Datadog as `env:<value>`
 
 Apply the `.env` files and run the fluentd wrapper with the following command, and note that the argument points to the `fluent.conf.*` file previously configured:
 
@@ -129,6 +130,7 @@ In order to run FluentD as a docker image to send the logs, violations, and metr
    * **JPD_ADMIN_USERNAME**: Artifactory username for authentication
    * **JFROG_ADMIN_TOKEN**: Artifactory [Access Token](https://jfrog.com/help/r/how-to-generate-an-access-token-video/artifactory-creating-access-tokens-in-artifactory) for authentication
    * **COMMON_JPD**: This flag should be set as true only for non-kubernetes installations or installations where JPD base URL is same to access both Artifactory and Xray (ex: https://sample_base_url/artifactory or https://sample_base_url/xray)
+   * **LOG_ENV**: Optional environment tag for categorizing logs and metrics (e.g., `staging`, `production`, `dev`). This tag will be added to all logs and metrics sent to Datadog as `env:<value>`
 6. Execute 'docker run -it --name jfrog-fluentd-datadog-rt -v <path_to_folder_contains_log_dir>:/var/opt/jfrog/artifactory --env-file docker.env <image_name>'
 
    The `<path_to_logs>` should be an absolute path where the Jfrog Artifactory Logs folder resides, such as a Docker based Artifactory Installation like`/var/opt/jfrog/artifactory/var/logs` on the docker host. For example:
@@ -234,7 +236,7 @@ export MASTER_KEY=$(openssl rand -hex 32)
    ```bash
    helm upgrade --install artifactory jfrog/artifactory \
             --set artifactory.joinKey=$JOIN_KEY \
-            --set databaseUpgradeReady=true --set postgresql.postgresqlPassword=$POSTGRES_PASSWORD --set nginx.service.ssloffload=true \
+            --set databaseUpgradeReady=true --set postgresql.auth.password=$POSTGRES_PASSWORD --set nginx.service.ssloffload=true \
             --set datadog.api_key=$DATADOG_API_KEY \
             --set datadog.api_host=$DATADOG_API_HOST \
             --set datadog.compress_data=$DATADOG_COMPRESS_DATA \
@@ -242,6 +244,7 @@ export MASTER_KEY=$(openssl rand -hex 32)
             --set jfrog.observability.jpd_url=$JPD_URL \
             --set jfrog.observability.username=$JPD_ADMIN_USERNAME \
             --set jfrog.observability.common_jpd=$COMMON_JPD \
+            --set jfrog.observability.log_env=$LOG_ENV \
             -f helm/artifactory-values.yaml \
             -n $INST_NAMESPACE
    ```
@@ -317,6 +320,7 @@ export MASTER_KEY=$(openssl rand -hex 32)
        --set jfrog.observability.jpd_url=$JPD_URL \
        --set jfrog.observability.username=$JPD_ADMIN_USERNAME \
        --set jfrog.observability.common_jpd=$COMMON_JPD \
+       --set jfrog.observability.log_env=$LOG_ENV \
        -f helm/artifactory-ha-values.yaml \
        -n $INST_NAMESPACE
    ```
@@ -368,6 +372,7 @@ helm upgrade --install xray jfrog/xray --set xray.jfrogUrl=$JPD_URL \
        --set jfrog.observability.jpd_url=$JPD_URL \
        --set jfrog.observability.username=$JPD_ADMIN_USERNAME \
        --set jfrog.observability.common_jpd=$COMMON_JPD \
+       --set jfrog.observability.log_env=$LOG_ENV \
        -f helm/xray-values.yaml \
        -n $INST_NAMESPACE
 ```
