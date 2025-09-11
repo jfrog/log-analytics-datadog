@@ -19,6 +19,7 @@
   apikey "#{ENV['DATADOG_API_KEY']}"
   url "https://api.#{ENV['DATADOG_API_HOST']}/api/v2/series"
   gzip_compression "#{ENV['DATADOG_COMPRESS_DATA']}"
+  ddtags ["env:#{ENV['LOG_ENV']}"]
   # verify_ssl "#{ENV['DATADOG_VERIFY_SSL']}"
   # ddtags ["instance:test-artifactory", "cluster:GKE"]
 </match>
@@ -142,6 +143,7 @@
   dd_source jfrog_platform
   service jfrog_xray
   host "http-intake.logs.#{ENV['DATADOG_API_HOST']}"
+  dd_tags "env:#{ENV['LOG_ENV']}"
   <buffer>
     flush_interval 1s
     # frequency of the buffer flush
@@ -328,6 +330,7 @@
     dd_source jfrog_platform
     service jfrog_xray
     host "http-intake.logs.#{ENV['DATADOG_API_HOST']}"
+    dd_tags "env:#{ENV['LOG_ENV']}"
     <buffer>
       flush_interval 1s
       # frequency of the buffer flush
