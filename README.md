@@ -47,6 +47,8 @@ Once this configuration is done and the application is restarted, metrics will b
 
 :bulb: Metrics are enabled by default in Xray.
 
+:bulb: **RTFS Metrics**: If your Artifactory deployment includes RTFS (Real-Time File Store), metrics are automatically collected from the `artifactory/service/rtfs/api/v1/metrics` endpoint. No additional configuration is required -- the fluentd config already includes an RTFS metrics source block that runs alongside the standard Artifactory metrics collection.
+
 :bulb: For kubernetes based installs, openMetrics collection is enabled in the helm install commands listed in the sections below
 
 ## Fluentd Installation
@@ -390,6 +392,10 @@ This dashboard is divided into three sections Application, Audit and Requests
 #### JFrog Artifactory Metrics dashboard
 
 This dashboard tracks Artifactory System Metrics, JVM memory, Garbabe Collection, Database Connections, and HTTP Connections metrics
+
+#### JFrog RTFS Metrics
+
+When RTFS is deployed as part of Artifactory, RTFS metrics are collected from `artifactory/service/rtfs/api/v1/metrics` and forwarded to Datadog with the `jfrog.rtfs` metric prefix. These metrics are available alongside standard Artifactory metrics in Datadog for monitoring RTFS-specific performance and health.
 
 #### JFrog Xray Logs dashboard
 
