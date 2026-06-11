@@ -114,12 +114,12 @@ source jfrog.env
 In order to run FluentD as a docker image to send the logs, violations, and metrics data to Datadog, execute the following commands on the host that runs the docker.
 
 1. Execute the `docker version` and `docker ps` commands to verify that the Docker installation is functional.
-2. If the version and process are listed successfully, build the intended docker image for Datadog using the docker file. You can download [this Dockerfile]https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/docker-build/Dockerfile to any directory that has write permissions.
-3. Download the `docker.env` file needed to run `Jfrog/FluentD` Docker Images for Datadog. You can download [this docker.env]https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/docker-build/docker.env to the directory where the docker file was downloaded.
-4. Execute the following command to build the docker image: `docker build --build-arg SOURCE="JFRT" --build-arg TARGET="DATADOG" -t <image_name>`. For example:
+2. If the version and process are listed successfully, build the intended docker image for Datadog using the docker file. You can download [this Dockerfile](https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/docker-build/Dockerfile) to any directory that has write permissions.
+3. Download the `docker.env` file needed to run `Jfrog/FluentD` Docker Images for Datadog. You can download [this docker.env](https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/docker-build/docker.env) to the directory where the docker file was downloaded.
+4. Execute the following command to build the docker image: `docker build --build-arg SOURCE="JFRT" --build-arg TARGET="DATADOG" -t <image_name> .`. For example:
 
    ```bash
-    docker build --build-arg SOURCE="JFRT" --build-arg TARGET="DATADOG" -t jfrog/fluentd-datadog-rt .'
+    docker build --build-arg SOURCE="JFRT" --build-arg TARGET="DATADOG" -t jfrog/fluentd-datadog-rt .
    ```
 5. Fill out the necessary information in the docker.env file:
 
@@ -140,6 +140,9 @@ In order to run FluentD as a docker image to send the logs, violations, and metr
    ```bash
     docker run -it --name jfrog-fluentd-datadog-rt -v $JFROG_HOME/artifactory/var/:/var/opt/jfrog/artifactory --env-file docker.env jfrog/fluentd-datadog-rt
    ```
+
+> [!IMPORTANT]
+> The fluentd image runs as a non-root user (`fluent`, uid `999`). The container tails the Artifactory log files from the mounted directory and writes `.pos` (position) files next to them, so uid `999` must be able to **read** the mounted log files and **write** into the mounted log directory. JFrog product logs are typically owned by the product user (for example uid `1030`, directory mode `755`, files mode `640`), which uid `999` cannot access by default - fluentd then fails with `Errno::EACCES ... .pos` and the worker restarts in a loop. To avoid this, either run the container as root (`docker run --user root ...`), run it as the uid that owns the Artifactory logs (`--user <artifactory-uid>`), or make the mounted log directory readable and writable by uid `999`.
 
 ### Kubernetes Deployment with Helm
 
