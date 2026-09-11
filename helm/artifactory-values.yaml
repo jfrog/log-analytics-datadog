@@ -49,6 +49,132 @@ artifactory:
           value: {{ .Values.jfrog.observability.log_env | default "staging" | quote }}
         - name: FLUENTD_CONF
           value: ../../../..{{ .Values.artifactory.persistence.mountPath }}/etc/fluentd/fluentd.conf
+# Log-forwarding only sidecar for the frontend pod. Platform metrics and callhome are
+# collected once by the artifactory pod's sidecar, so JPD_URL / JPD_ADMIN_USERNAME /
+# JFROG_ADMIN_TOKEN / COMMON_JPD / DATADOG_COMPRESS_DATA / DATADOG_VERIFY_SSL are
+# deliberately omitted here.
+frontend:
+  customInitContainers: |
+    - name: "download-fluentd-conf-on-frontend"
+      image: {{ include "artifactory.getImageInfoByValue" (list . "initContainers") }}
+      imagePullPolicy: "{{ .Values.initContainers.image.pullPolicy }}"
+      {{- if .Values.frontend.containerSecurityContext.enabled }}
+      securityContext: {{- omit .Values.frontend.containerSecurityContext "enabled" | toYaml | nindent 4 }}
+      {{- end }}
+      command:
+        - 'sh'
+        - '-c'
+        - >
+          mkdir -p {{ .Values.frontend.persistence.mountPath }}/etc/fluentd/;
+          curl -fsSL https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.rt.frontend -o {{ .Values.frontend.persistence.mountPath }}/etc/fluentd/fluentd.conf;
+      volumeMounts:
+        - mountPath: "{{ .Values.frontend.persistence.mountPath }}"
+          name: data
+  customSidecarContainers: |
+    - name: "frontend-fluentd-sidecar"
+      image: "releases-docker.jfrog.io/fluentd:4.22"
+      imagePullPolicy: "IfNotPresent"
+      {{- if .Values.frontend.containerSecurityContext.enabled }}
+      securityContext: {{- omit .Values.frontend.containerSecurityContext "enabled" | toYaml | nindent 4 }}
+      {{- end }}
+      volumeMounts:
+        - mountPath: "{{ .Values.frontend.persistence.mountPath }}"
+          name: data
+      env:
+        - name: JF_PRODUCT_DATA_INTERNAL
+          value: {{ .Values.frontend.persistence.mountPath }}
+        - name: DATADOG_API_KEY
+          value: {{ .Values.datadog.api_key }}
+        - name: DATADOG_API_HOST
+          value: {{ .Values.datadog.api_host }}
+        - name: LOG_ENV
+          value: {{ .Values.jfrog.observability.log_env | default "staging" | quote }}
+        - name: FLUENTD_CONF
+          value: ../../../..{{ .Values.frontend.persistence.mountPath }}/etc/fluentd/fluentd.conf
+# Log-forwarding only sidecar for the jfbus pod. Platform metrics and callhome are
+# collected once by the artifactory pod's sidecar, so JPD_URL / JPD_ADMIN_USERNAME /
+# JFROG_ADMIN_TOKEN / COMMON_JPD / DATADOG_COMPRESS_DATA / DATADOG_VERIFY_SSL are
+# deliberately omitted here.
+jfbus:
+  customInitContainers: |
+    - name: "download-fluentd-conf-on-jfbus"
+      image: {{ include "artifactory.getImageInfoByValue" (list . "initContainers") }}
+      imagePullPolicy: "{{ .Values.initContainers.image.pullPolicy }}"
+      {{- if .Values.jfbus.containerSecurityContext.enabled }}
+      securityContext: {{- omit .Values.jfbus.containerSecurityContext "enabled" | toYaml | nindent 4 }}
+      {{- end }}
+      command:
+        - 'sh'
+        - '-c'
+        - >
+          mkdir -p {{ .Values.jfbus.persistence.mountPath }}/etc/fluentd/;
+          curl -fsSL https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.rt.jfbus -o {{ .Values.jfbus.persistence.mountPath }}/etc/fluentd/fluentd.conf;
+      volumeMounts:
+        - mountPath: "{{ .Values.jfbus.persistence.mountPath }}"
+          name: data
+  customSidecarContainers: |
+    - name: "jfbus-fluentd-sidecar"
+      image: "releases-docker.jfrog.io/fluentd:4.22"
+      imagePullPolicy: "IfNotPresent"
+      {{- if .Values.jfbus.containerSecurityContext.enabled }}
+      securityContext: {{- omit .Values.jfbus.containerSecurityContext "enabled" | toYaml | nindent 4 }}
+      {{- end }}
+      volumeMounts:
+        - mountPath: "{{ .Values.jfbus.persistence.mountPath }}"
+          name: data
+      env:
+        - name: JF_PRODUCT_DATA_INTERNAL
+          value: {{ .Values.jfbus.persistence.mountPath }}
+        - name: DATADOG_API_KEY
+          value: {{ .Values.datadog.api_key }}
+        - name: DATADOG_API_HOST
+          value: {{ .Values.datadog.api_host }}
+        - name: LOG_ENV
+          value: {{ .Values.jfrog.observability.log_env | default "staging" | quote }}
+        - name: FLUENTD_CONF
+          value: ../../../..{{ .Values.jfbus.persistence.mountPath }}/etc/fluentd/fluentd.conf
+# Log-forwarding only sidecar for the jfmelt pod. Platform metrics and callhome are
+# collected once by the artifactory pod's sidecar, so JPD_URL / JPD_ADMIN_USERNAME /
+# JFROG_ADMIN_TOKEN / COMMON_JPD / DATADOG_COMPRESS_DATA / DATADOG_VERIFY_SSL are
+# deliberately omitted here.
+jfmelt:
+  customInitContainers: |
+    - name: "download-fluentd-conf-on-jfmelt"
+      image: {{ include "artifactory.getImageInfoByValue" (list . "initContainers") }}
+      imagePullPolicy: "{{ .Values.initContainers.image.pullPolicy }}"
+      {{- if .Values.jfmelt.containerSecurityContext.enabled }}
+      securityContext: {{- omit .Values.jfmelt.containerSecurityContext "enabled" | toYaml | nindent 4 }}
+      {{- end }}
+      command:
+        - 'sh'
+        - '-c'
+        - >
+          mkdir -p {{ .Values.jfmelt.persistence.mountPath }}/etc/fluentd/;
+          curl -fsSL https://raw.githubusercontent.com/jfrog/log-analytics-datadog/master/fluent.conf.rt.jfmelt -o {{ .Values.jfmelt.persistence.mountPath }}/etc/fluentd/fluentd.conf;
+      volumeMounts:
+        - mountPath: "{{ .Values.jfmelt.persistence.mountPath }}"
+          name: data
+  customSidecarContainers: |
+    - name: "jfmelt-fluentd-sidecar"
+      image: "releases-docker.jfrog.io/fluentd:4.22"
+      imagePullPolicy: "IfNotPresent"
+      {{- if .Values.jfmelt.containerSecurityContext.enabled }}
+      securityContext: {{- omit .Values.jfmelt.containerSecurityContext "enabled" | toYaml | nindent 4 }}
+      {{- end }}
+      volumeMounts:
+        - mountPath: "{{ .Values.jfmelt.persistence.mountPath }}"
+          name: data
+      env:
+        - name: JF_PRODUCT_DATA_INTERNAL
+          value: {{ .Values.jfmelt.persistence.mountPath }}
+        - name: DATADOG_API_KEY
+          value: {{ .Values.datadog.api_key }}
+        - name: DATADOG_API_HOST
+          value: {{ .Values.datadog.api_host }}
+        - name: LOG_ENV
+          value: {{ .Values.jfrog.observability.log_env | default "staging" | quote }}
+        - name: FLUENTD_CONF
+          value: ../../../..{{ .Values.jfmelt.persistence.mountPath }}/etc/fluentd/fluentd.conf
 datadog:
   api_key: DATADOG_API_KEY
   api_host: DATADOG_API_HOST

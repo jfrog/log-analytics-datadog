@@ -4,7 +4,9 @@ The following document describes how to configure Datadog to gather logs, metric
 
 ## Versions Supported
 
-This integration is last tested with Artifactory 7.104.7 and Xray 3.92.7 versions.
+This integration was last tested end to end with Artifactory 7.104.7 and Xray 3.92.7.
+
+Log collection for the `frontend`, `jfbus` and `jfmelt` services, which Artifactory deploys as standalone pods, targets Artifactory 7.161.x and later and was validated against chart 107.161.19. The rest of the integration has not been re-tested on 7.161.x. Use the updated `helm/artifactory-values.yaml` / `helm/artifactory-ha-values.yaml` files, which attach a FluentD sidecar to each of those Deployments and load `fluent.conf.rt.frontend`, `fluent.conf.rt.jfbus` and `fluent.conf.rt.jfmelt`. JFmelt is Pro-only and is skipped automatically when that Deployment is not enabled. See [Service pod architecture changes](https://docs.jfrog.com/installation/docs/service-pod-architecture-changes).
 
 ## Table of Contents
 
@@ -157,6 +159,27 @@ The recommended installation method for Kubernetes is to utilize the helm chart 
 | Artifactory    | helm/artifactory-values.yaml    |
 | Artifactory HA | helm/artifactory-ha-values.yaml |
 | Xray           | helm/xray-values.yaml           |
+
+| Pod / Deployment (Artifactory 7.161.x+) | FluentD config | Logs collected | Helm keys |
+| --------------------------------------- | -------------- | -------------- | --------- |
+| Artifactory StatefulSet | `fluent.conf.rt` | (existing Artifactory log set) | `artifactory.customInitContainersBegin`, `artifactory.customSidecarContainers` |
+| Frontend | `fluent.conf.rt.frontend` | `frontend-service.log`, `frontend-request.log`, `router-service.log`, `router-request.log`, `router-traefik.log` | `frontend.customInitContainers`, `frontend.customSidecarContainers` |
+| JFBus | `fluent.conf.rt.jfbus` | `jfbus-service.log`, `jfbus-request.log`, `router-service.log`, `router-request.log`, `router-traefik.log` | `jfbus.customInitContainers`, `jfbus.customSidecarContainers` |
+| JFmelt (Pro; requires JFBus and JFConnect) | `fluent.conf.rt.jfmelt` | `jfmelt-service.log`, `jfmelt-request.log`, `jfmelt-request-out.log`, `router-service.log`, `router-request.log`, `router-traefik.log` | `jfmelt.customInitContainers`, `jfmelt.customSidecarContainers` |
+
+All three sidecars ship to Datadog with the same `dd_source jfrog_platform` and `service jfrog_artifactory` as the existing Artifactory sidecar, so the filters behind the [JFrog Artifactory Dashboard](#jfrog-artifactory-dashboard) and any saved views you already have keep matching. Expect more volume behind those filters, though: each of the three pods runs its own `router` container, so `router-service.log`, `router-request.log` and `router-traefik.log` now arrive from four pods instead of one (more still on HA, where the Artifactory pod is replicated). Any widget that counts or rates `log_source:jfrog.rt.router.*` will step up after the upgrade.
+
+`log_source` is set from the fluentd tag, so it identifies the log **file**, not the pod - the router logs from all four pods share the same `log_source` values, and `frontend-request.log` keeps the same `jfrog.rt.frontend.request` tag it had in the Artifactory pod. Use `hostname` to tell which pod a given line came from.
+
+The wiring is automatic. The `customInitContainers` and `customSidecarContainers` blocks for `frontend`, `jfbus` and `jfmelt` are already part of the values files, so **no new `--set` flags are required** - the `helm upgrade` commands documented below pick them up as-is.
+
+:bulb: Logs in the `frontend`, `jfbus` and `jfmelt` pods are written to an `emptyDir`. Both the log files and fluentd's position (`.pos`) files are lost when a pod restarts, so log history for these services does not survive a pod recycle.
+
+:bulb: jfbus 1.386.17 writes each service-log line twice - once fully formatted, then a bare ` - <message>` continuation line. The shared `concat` filter, inherited unchanged from `fluent.conf.rt` and applied to every tag, folds the bare line back into the preceding record, so no configuration workaround is needed on your side.
+
+The following logs are deliberately not collected: `jfbus-publish-events.log`, `jfbus-consume-events.log`, `jfbus-ack-events.log` and `jfbus-receive-polling.log` (high-volume event traces), and `jfmelt-metrics.log`. `jfmelt-request-out.log` is collected, but ships unparsed as a raw message, the same way `router-request.log` already does.
+
+Some service logs are still not collected anywhere on 7.161.x. Each of the three split pods also runs an `observability` container that writes `observability-service.log` into the same shared log directory, and none of the three new configs tail it. The Artifactory StatefulSet likewise contains `evidence`, `onemodel`, `event`, `jfconnect`, `topology`, `jfconfig` and `observability` service containers whose logs `fluent.conf.rt` does not collect.
 
 > [!WARNING]
 >

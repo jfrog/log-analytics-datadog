@@ -1,0 +1,151 @@
+# JFROG FRONTEND POD LOGS
+# Fluentd sidecar config for the standalone `frontend` Deployment.
+# Requires Artifactory 7.161+ (helm chart 107.161+), where frontend runs as its own
+# Deployment with containers [observability, frontend, router] sharing the `data` emptyDir.
+# Platform metrics and callhome are collected by the artifactory pod's sidecar via fluent.conf.rt.
+
+# LOG SOURCE DIRECTIVES
+## SERVICE LOGS
+<source>
+  @type tail
+  @id frontend_service_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/frontend-service.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/frontend-service.log.pos"
+  tag jfrog.rt.frontend.service
+  <parse>
+    @type none
+  </parse>
+</source>
+<source>
+  @type tail
+  @id router_service_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-service.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-service.log.pos"
+  tag jfrog.rt.router.service
+  <parse>
+    @type none
+  </parse>
+</source>
+## TRAEFIK LOGS
+<source>
+  @type tail
+  @id router_traefik_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-traefik.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-traefik.log.pos"
+  tag jfrog.rt.router.traefik
+  <parse>
+      @type multiline
+      format_firstline /\d{4}-\d{1,2}-\d{1,2}/
+      format1 /^(?<log_timestamp>[^ ]*) \[(?<service_type>[^\]]*)\] \[(?<log_level>[^\]]*)\] \[(?<trace_id>[^\]]*)\] \[(?<class_line_number>.*)\] \[(?<thread>.*)\] \[\] -(?<message>.*)$/
+  </parse>
+</source>
+## REQUEST LOGS
+<source>
+  @type tail
+  @id frontend_request_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/frontend-request.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/frontend-request.log.pos"
+  tag jfrog.rt.frontend.request
+  <parse>
+    @type none
+  </parse>
+</source>
+<source>
+  @type tail
+  @id router_request_tail
+  path "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-request.log"
+  pos_file "#{ENV['JF_PRODUCT_DATA_INTERNAL']}/log/router-request.log.pos"
+  tag jfrog.rt.router.request
+  <parse>
+    @type none
+  </parse>
+</source>
+
+
+# FILTER DIRECTIVE
+## ALL LOGS
+<filter **>
+  @type concat
+  key message
+  multiline_start_regexp /\d{4}-\d{1,2}-\d{1,2}/
+  timeout_label @NORMAL
+  flush_interval 5
+</filter>
+<match **>
+  @type relabel
+  @label @NORMAL
+</match>
+<label @NORMAL>
+## SERVICE LOGS
+  <filter jfrog.rt.**.service>
+    @type record_transformer
+    enable_ruby true
+    <record>
+      message ${record["message"].gsub(/\e\[([;\d]+)?m/, '')}
+    </record>
+  </filter>
+  <filter jfrog.rt.frontend.service>
+    @type parser
+    key_name message
+    <parse>
+        @type multiline
+        format_firstline /\d{4}-\d{1,2}-\d{1,2}/
+        format1 /^(?<log_timestamp>[^ ]*) \[(?<service_type>[^\]]*)\] \[(?<log_level>[^\]]*)\] \[(?<trace_id>[^\]]*)\] \[(?<class_line_number>.*)\] \[(?<thread>.*)\] -(?<message>.*)$/
+    </parse>
+  </filter>
+  <filter jfrog.rt.router.service>
+    @type parser
+    key_name message
+    <parse>
+        @type multiline
+        format_firstline /\d{4}-\d{1,2}-\d{1,2}/
+        format1 /^(?<log_timestamp>[^ ]*) \[(?<service_type>[^\]]*)\] \[(?<log_level>[^\]]*)\] \[(?<trace_id>[^\]]*)\] \[(?<class_line_number>.*)\] \[(?<thread>.*)\] \[\] -(?<message>.*)$/
+    </parse>
+  </filter>
+  ## REQUEST LOGS
+  # jfrog.rt.router.request has no parser filter, matching fluent.conf.rt - it ships as a raw message.
+  # No types line here deliberately - this tag also exists in fluent.conf.rt, whose parser has none.
+  # Both configs can be live during an upgrade, and Datadog facets are single-typed, so emitting return_status as an integer here would clash.
+  <filter jfrog.rt.frontend.request>
+    @type parser
+    key_name message
+    <parse>
+      @type regexp
+      expression ^(?<log_timestamp>[^\|]*)\|(?<trace_id>[^\|]*)\|(?<remote_address>[^\|]*)\|(?<username>[^\|]*)\|(?<request_method>[^\|]*)\|(?<request_url>[^\|]*)\|(?<return_status>[^\|]*)\|(?<request_content_length>[^\|]*)\|(?<response_content_length>[^\|]*)\|(?<request_duration>[^\|]*)\|(?<request_user_agent>.+)$
+    </parse>
+  </filter>
+  ## ALL LOGS
+  <filter jfrog.**>
+    @type record_transformer
+    <record>
+      hostname "#{Socket.gethostname}"
+      log_source ${tag}
+    </record>
+  </filter>
+  # TEST OUTPUT
+  #<match **>
+  #  @type stdout
+  #</match>
+
+  # DATADOG OUTPUT
+  ## DATADOG ARTIFACTORY LOGS OUTPUT
+  <match jfrog.**>
+    @type datadog
+    @id jfrog_frontend
+    api_key "#{ENV['DATADOG_API_KEY']}"
+    #optional
+    include_tag_key true
+    dd_source jfrog_platform
+    service jfrog_artifactory
+    host "http-intake.logs.#{ENV['DATADOG_API_HOST']}"
+    dd_tags "env:#{ENV['LOG_ENV']}"
+    <buffer>
+      flush_interval 1s
+      # frequency of the buffer flush
+      flush_thread_count 5
+      # The number of threads to flush/write chunks in parallel
+      chunk_limit_records 10
+      # The max number of events that each chunks can store in it
+    </buffer>
+  </match>
+</label>

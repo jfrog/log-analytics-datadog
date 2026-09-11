@@ -2,6 +2,18 @@
 
 All changes to the log analytics integration will be documented in this file.
 
+## [1.0.18] - August 2026
+
+* Added log collection for the `frontend`, `jfbus` and `jfmelt` services, which Artifactory 7.161.x deploys as standalone pods instead of containers inside the Artifactory StatefulSet - on 7.161.x the Artifactory pod's sidecar cannot see their log files, so none of them were collected. `frontend-request.log` is still collected by `fluent.conf.rt` on earlier versions; it only stops being produced in the Artifactory pod once frontend moves out (JOBS-2792)
+* New logs-only fluentd configs `fluent.conf.rt.frontend`, `fluent.conf.rt.jfbus` and `fluent.conf.rt.jfmelt`, each collecting its own service and request logs plus `router-service.log`, `router-request.log` and `router-traefik.log`; the `concat` filter inherited unchanged from `fluent.conf.rt` also folds the bare ` - <message>` continuation line that jfbus 1.386.17 emits after every service-log line, so no jfbus-specific handling was needed
+* `helm/artifactory-values.yaml` and `helm/artifactory-ha-values.yaml` now carry `customInitContainers` / `customSidecarContainers` blocks for the `frontend`, `jfbus` and `jfmelt` pods - no new `--set` flags are needed, the documented `helm upgrade` commands pick them up as-is. Init and sidecar containers inherit each service's `containerSecurityContext` when it is enabled
+* All three sidecars ship with the same `dd_source jfrog_platform` and `service jfrog_artifactory` as the Artifactory sidecar, so existing dashboard filters keep matching; `hostname` identifies the originating pod, while `log_source` is the fluentd tag and so names the log file. Note that router log volume under `service:jfrog_artifactory` rises on upgrade, as `router-service.log`, `router-request.log` and `router-traefik.log` now arrive from four pods instead of one
+* Platform metrics (`jfrog_metrics` / `jfrog_send_metrics`) and callhome remain in the Artifactory pod's `fluent.conf.rt` only, so they are still collected once per JPD rather than once per pod
+* No fluentd sidecar image change - `releases-docker.jfrog.io/fluentd:4.22` already ships every plugin these configs require
+* Requires Artifactory 7.161.x or later; on earlier versions the new values-file blocks are inert. Chart 107.161.x also blocks `splitServicesToContainers: false`
+* Logs in the `frontend`, `jfbus` and `jfmelt` pods live on an `emptyDir`, so log files and fluentd position files are lost on pod restart
+* Deliberately not collected: `jfbus-publish-events.log`, `jfbus-consume-events.log`, `jfbus-ack-events.log`, `jfbus-receive-polling.log` and `jfmelt-metrics.log`; `jfmelt-request-out.log` is collected but ships unparsed as a raw message, as `router-request.log` already does. `observability-service.log`, which the `observability` container in each of the three pods also writes, is not collected either
+
 ## [1.0.17] - June 2026
 
 * Fluentd sidecar image bumped to 4.22: now consumes the released image `releases-docker.jfrog.io/fluentd:4.22` directly (fluentd 1.19.3 on the refreshed hardened Echo base), remediating the critical OS-package vulnerability CVE-2026-55200 in libssh2 (1.11.1-1+e1 -> 1.11.1-1+e2) carried by the 4.21 base image (JOBS-2583)
