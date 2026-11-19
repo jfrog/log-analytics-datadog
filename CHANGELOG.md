@@ -2,6 +2,16 @@
 
 All changes to the log analytics integration will be documented in this file.
 
+## [1.0.20] - November 2026
+
+* Fluentd sidecar image bumped to 4.24: now consumes the released image `releases-docker.jfrog.io/fluentd:4.24` directly (fluentd 1.19.4 on the hardened Echo base rebuilt with Ruby 3.4.13). This fixes the Ruby2Shell vulnerability in Ruby 3.4.12, which the 4.23 image carries (JOBS-4074)
+* `docker-build/Dockerfile` now builds `FROM releases-docker.jfrog.io/fluentd:4.24`
+
+## [1.0.19] - November 2026
+
+* Fluentd sidecar image bumped to 4.23: now consumes the released image `releases-docker.jfrog.io/fluentd:4.23` directly (fluentd 1.19.4 on the refreshed hardened Echo base). The image drops the stale gem copies that carried Critical/High CVEs (fluentd 1.19.0, concurrent-ruby 1.3.5, oj 3.16.11, msgpack 1.8.0, rexml, json), pins fluent-plugin-prometheus to 2.2.2 so its metrics endpoint keeps listening on all interfaces, and fixes fluent-plugin-detect-exceptions failing to load as the fluent user (JOBS-3435)
+* `docker-build/Dockerfile` now builds `FROM releases-docker.jfrog.io/fluentd:4.23`
+
 ## [1.0.18] - August 2026
 
 * Added log collection for the `frontend`, `jfbus` and `jfmelt` services, which Artifactory 7.161.x deploys as standalone pods instead of containers inside the Artifactory StatefulSet - on 7.161.x the Artifactory pod's sidecar cannot see their log files, so none of them were collected. `frontend-request.log` is still collected by `fluent.conf.rt` on earlier versions; it only stops being produced in the Artifactory pod once frontend moves out (JOBS-2792)
