@@ -18,7 +18,7 @@ artifactory:
           name: volume
   customSidecarContainers: |
     - name: "artifactory-fluentd-sidecar"
-      image: "releases-docker.jfrog.io/fluentd:4.22"
+      image: "releases-docker.jfrog.io/fluentd:4.24"
       imagePullPolicy: "IfNotPresent"
       volumeMounts:
         - mountPath: "{{ .Values.artifactory.persistence.mountPath }}"
@@ -72,7 +72,7 @@ frontend:
           name: data
   customSidecarContainers: |
     - name: "frontend-fluentd-sidecar"
-      image: "releases-docker.jfrog.io/fluentd:4.22"
+      image: "releases-docker.jfrog.io/fluentd:4.24"
       imagePullPolicy: "IfNotPresent"
       {{- if .Values.frontend.containerSecurityContext.enabled }}
       securityContext: {{- omit .Values.frontend.containerSecurityContext "enabled" | toYaml | nindent 4 }}
@@ -114,7 +114,7 @@ jfbus:
           name: data
   customSidecarContainers: |
     - name: "jfbus-fluentd-sidecar"
-      image: "releases-docker.jfrog.io/fluentd:4.22"
+      image: "releases-docker.jfrog.io/fluentd:4.24"
       imagePullPolicy: "IfNotPresent"
       {{- if .Values.jfbus.containerSecurityContext.enabled }}
       securityContext: {{- omit .Values.jfbus.containerSecurityContext "enabled" | toYaml | nindent 4 }}
@@ -156,7 +156,7 @@ jfmelt:
           name: data
   customSidecarContainers: |
     - name: "jfmelt-fluentd-sidecar"
-      image: "releases-docker.jfrog.io/fluentd:4.22"
+      image: "releases-docker.jfrog.io/fluentd:4.24"
       imagePullPolicy: "IfNotPresent"
       {{- if .Values.jfmelt.containerSecurityContext.enabled }}
       securityContext: {{- omit .Values.jfmelt.containerSecurityContext "enabled" | toYaml | nindent 4 }}
